@@ -39,8 +39,8 @@ You will use TFX CLI to compile and deploy the pipeline. The pipeline DSL retrie
 
 
 ```
-export PROJECT_ID=$(gcloud config get-value core/project)
-export GKE_CLUSTER_NAME=[YOUR KFP CLUSTER]
+export PROJECT_ID=[YOUR PROJECT ID]
+export GKE_CLUSTER_NAME=[YOUR KFP CLUSTER NAMESPACE]
 export NAMESPACE=[NAMESPACE WHERE KFP IS INSTALLED]
 export GCP_REGION=[YOUR REGION]
 export ZONE=[ZONE OF YOUR GKE CLUSTER]
