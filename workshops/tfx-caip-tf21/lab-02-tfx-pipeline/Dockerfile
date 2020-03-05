@@ -1,5 +1,5 @@
 FROM tensorflow/tfx:0.21.0
-RUN python -m pip install -U tensorflow_model_analysis==0.21.4 
+RUN python -m pip install -U tensorflow_model_analysis==0.21.4 tensorflow_data_validation==0.21.4 tensorflow-transform==0.21.2
 WORKDIR /pipeline
 COPY transform_train.py ./
 COPY schema.pbtxt ./schema/
