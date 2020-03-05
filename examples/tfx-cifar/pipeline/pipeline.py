@@ -19,10 +19,12 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-from typing import Text
+import kfp
+from typing import Optional, Dict, List, Text
 
 import absl
 
+from tfx.components.base import executor_spec
 from tfx.components import Evaluator
 from tfx.components import ExampleValidator
 from tfx.components import ImportExampleGen
@@ -32,22 +34,25 @@ from tfx.components import SchemaGen
 from tfx.components import StatisticsGen
 from tfx.components import Trainer
 from tfx.components import Transform
+from tfx.extensions.google_cloud_ai_platform.pusher import executor as ai_platform_pusher_executor
+from tfx.extensions.google_cloud_ai_platform.trainer import executor as ai_platform_trainer_executor
 from tfx.orchestration import metadata
 from tfx.orchestration import pipeline
-from tfx.orchestration.beam.beam_dag_runner import BeamDagRunner
+from tfx.orchestration import data_types
+from tfx.orchestration.kubeflow import kubeflow_dag_runner
 from tfx.proto import evaluator_pb2
 from tfx.proto import example_gen_pb2
 from tfx.proto import pusher_pb2
 from tfx.proto import trainer_pb2
 from tfx.utils.dsl_utils import external_input
-
+from tfx.types.standard_artifacts import Schema
 
 
 
 def _create_pipeline(pipeline_name: Text, 
                      pipeline_root: Text, 
-                     data_root: data_types.RuntimeParameter,,
-                     module_file: data_types.RuntimeParameter 
+                     data_root_uri: data_types.RuntimeParameter,
+                     module_file_uri: data_types.RuntimeParameter, 
                      train_steps: data_types.RuntimeParameter,
                      eval_steps: data_types.RuntimeParameter,
                      ai_platform_training_args: Dict[Text, Text],
@@ -56,36 +61,36 @@ def _create_pipeline(pipeline_name: Text,
   """Implements the cifar10 pipeline with TFX."""
 
   # Digest CIFAR10 training and eval splits
-  examples = external_input(data_root)
+  examples = external_input(data_root_uri)
   input_split = example_gen_pb2.Input(splits=[
       example_gen_pb2.Input.Split(name='train', pattern='train.tfrecord'),
       example_gen_pb2.Input.Split(name='eval', pattern='test.tfrecord')
   ])
-  example_gen = ImportExampleGen(input=examples, input_config=input_split)
+  generate_examples = ImportExampleGen(input=examples, input_config=input_split)
     
   # Computes statistics over data for visualization and example validation.
-  statistics_gen = StatisticsGen(examples=example_gen.outputs['examples'])
+  generate_statistics = StatisticsGen(examples=generate_examples.outputs['examples'])
 
   # Generates schema based on statistics files.
   infer_schema = SchemaGen(
-      statistics=statistics_gen.outputs['statistics'], infer_feature_shape=True)
+      statistics=generate_statistics.outputs['statistics'], infer_feature_shape=True)
 
   # Performs anomaly detection based on statistics and data schema.
   validate_stats = ExampleValidator(
-      statistics=statistics_gen.outputs['statistics'],
+      statistics=generate_statistics.outputs['statistics'],
       schema=infer_schema.outputs['schema'])
 
   # Performs transformations and feature engineering in training and serving.
   transform = Transform(
-      examples=example_gen.outputs['examples'],
+      examples=generate_examples.outputs['examples'],
       schema=infer_schema.outputs['schema'],
-      module_file=module_file)
+      module_file=module_file_uri)
 
   # Uses user-provided Python function that implements a model using TF-Learn.
-  trainer = Trainer(
+  train = Trainer(
       custom_executor_spec=executor_spec.ExecutorClassSpec(
           ai_platform_trainer_executor.Executor),
-      module_file=module_file,
+      module_file=module_file_uri,
       examples=transform.outputs['transformed_examples'],
       schema=infer_schema.outputs['schema'],
       transform_graph=transform.outputs['transform_graph'],
@@ -94,30 +99,31 @@ def _create_pipeline(pipeline_name: Text,
       custom_config={'ai_platform_training_args': ai_platform_training_args})
 
   # Uses TFMA to compute a evaluation statistics over features of a model.
-  evaluator = Evaluator(
-      examples=example_gen.outputs['examples'],
-      model=trainer.outputs['model'],
+  analyze = Evaluator(
+      examples=generate_examples.outputs['examples'],
+      model=train.outputs['model'],
       feature_slicing_spec=evaluator_pb2.FeatureSlicingSpec(
           specs=[evaluator_pb2.SingleSlicingSpec()]))
 
   # Performs quality validation of a candidate model (compared to a baseline).
-  model_validator = ModelValidator(
-      examples=example_gen.outputs['examples'], model=trainer.outputs['model'])
+  validate = ModelValidator(
+      examples=generate_examples.outputs['examples'], model=train.outputs['model'])
 
   # Checks whether the model passed the validation steps and pushes the model
   # to a file destination if check passed.
-  pusher = Pusher(
-      model=trainer.outputs['model'],
-      model_blessing=model_validator.outputs['blessing'],
+  deploy = Pusher(
+      model=train.outputs['model'],
+      model_blessing=validate.outputs['blessing'],
       push_destination=pusher_pb2.PushDestination(
           filesystem=pusher_pb2.PushDestination.Filesystem(
-              base_directory=str(pipeline.ROOT_PARAMETER), 'model_serving'))))
+              base_directory=os.path.join(
+                  str(pipeline.ROOT_PARAMETER), 'model_serving'))))
 
   return pipeline.Pipeline(
       pipeline_name=pipeline_name,
       pipeline_root=pipeline_root,
       components=[
-          generate_examples, generate_statistics, import_schema, infer_schema, validate_stats, transform,
+          generate_examples, generate_statistics, infer_schema, validate_stats, transform,
           train, analyze, validate, deploy
       ],
       enable_cache=enable_cache,
@@ -196,13 +202,13 @@ if __name__ == '__main__':
 
   # Compile the pipeline
   kubeflow_dag_runner.KubeflowDagRunner(config=runner_config).run(
-      _create__pipeline(
+      _create_pipeline(
           pipeline_name=pipeline_name,
           pipeline_root=pipeline_root,
           data_root_uri=data_root_uri,
           module_file_uri=module_file_uri,
-          schema_uri=schema_uri,
           train_steps=train_steps,
           eval_steps=eval_steps,
-          ai_platform_training_args=ai_platform_training_args)
+          ai_platform_training_args=ai_platform_training_args,
+          beam_pipeline_args=beam_pipeline_args))
 
