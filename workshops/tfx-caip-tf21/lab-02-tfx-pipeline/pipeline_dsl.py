@@ -14,9 +14,10 @@
 """Covertype training pipeline DSL."""
 
 import os
+import kfp
 from typing import Optional, Dict, List, Text
 
-from kfp import gcp
+
 from tfx.components.base import executor_spec
 from tfx.components import Evaluator
 from tfx.components import CsvExampleGen
@@ -36,6 +37,7 @@ from tfx.orchestration.kubeflow import kubeflow_dag_runner
 from tfx.orchestration.kubeflow.proto import kubeflow_pb2
 from tfx.proto import example_gen_pb2
 from tfx.proto import evaluator_pb2
+from tfx.proto import pusher_pb2
 from tfx.proto import trainer_pb2
 from tfx.utils.dsl_utils import external_input
 from tfx.types.standard_artifacts import Schema
@@ -114,12 +116,21 @@ def _create__pipeline(pipeline_name: Text,
 
   # Checks whether the model passed the validation steps and pushes the model
   # to a file destination if check passed.
+  #deploy = Pusher(
+  #    custom_executor_spec=executor_spec.ExecutorClassSpec(
+  #        ai_platform_pusher_executor.Executor),
+  #    model=train.outputs.model,
+  #    model_blessing=validate.outputs.blessing,
+  #    custom_config={'ai_platform_serving_args': ai_platform_serving_args})
+
   deploy = Pusher(
-      custom_executor_spec=executor_spec.ExecutorClassSpec(
-          ai_platform_pusher_executor.Executor),
       model=train.outputs.model,
       model_blessing=validate.outputs.blessing,
-      custom_config={'ai_platform_serving_args': ai_platform_serving_args})
+      push_destination=pusher_pb2.PushDestination(
+          filesystem=pusher_pb2.PushDestination.Filesystem(
+              base_directory=os.path.join(
+                  str(pipeline.ROOT_PARAMETER), 'model_serving'))))
+
 
   return pipeline.Pipeline(
       pipeline_name=pipeline_name,
@@ -203,9 +214,9 @@ if __name__ == '__main__':
       ptype=int
   )
   
-  pipeline_root = '{}/{}'.format(artifact_store_uri, pipeline_name)
+
+  pipeline_root = '{}/{}/{}'.format(artifact_store_uri, pipeline_name, kfp.dsl.RUN_ID_PLACEHOLDER)
     
-  
   # Set KubeflowDagRunner settings
   metadata_config = kubeflow_dag_runner.get_default_kubeflow_metadata_config()
   operator_funcs = kubeflow_dag_runner. get_default_pipeline_operator_funcs(use_gcp_sa=True)
