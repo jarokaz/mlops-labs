@@ -47,7 +47,7 @@ export ZONE=[ZONE OF YOUR GKE CLUSTER]
 export ARTIFACT_STORE_URI=[YOUR GCS BUCKET]
 
 export GCS_STAGING_PATH=${ARTIFACT_STORE_URI}/staging
-export DATA_ROOT_URI=gs://workshop-datasets/covertype/small
+export DATA_ROOT_URI=gs://workshop-datasets/cifar10
 
 gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone $ZONE
 export INVERSE_PROXY_HOSTNAME=$(kubectl describe configmap inverse-proxy-config -n $NAMESPACE | grep "googleusercontent.com")
