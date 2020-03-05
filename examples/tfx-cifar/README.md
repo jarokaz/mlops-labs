@@ -23,7 +23,6 @@ risk.
 You can read more about the dataset in
 [CIFAR dataset homepage](https://www.cs.toronto.edu/~kriz/cifar.html).
 
-// TODO(ruoyu): Add instruction for generating the dataset.
 
 ## Lab environment setup
 To build and deploy the pipeline you need a workstation with the Python KFP and TFX SDKs and a Hosted Pipelines environment. 
