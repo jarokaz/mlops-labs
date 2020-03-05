@@ -69,7 +69,7 @@ As you are debugging the pipeline DSL, you may prefer to first use the `tfx pipe
 
 To compile the DSL
 ```
-tfx pipeline compile --engine kubeflow --pipeline_path pipeline.py
+tfx pipeline compile --engine kubeflow --pipeline_path pipeline/pipeline.py
 ```
 This command creates a pipeline package named `${PIPELINE_NAME}.tar.gz`. The package containes the `pipeline.yaml` file that is a Kubeflow Pipelines YAML specification of the pipeline. 
 
@@ -87,7 +87,7 @@ sed -i $SED_SCRIPT build.yaml
 ```
 
 ```
-tfx pipeline create --engine kubeflow --pipeline_path pipeline_dsl.py --endpoint $INVERSE_PROXY_HOSTNAME
+tfx pipeline create --engine kubeflow --pipeline_path pipeline/pipeline.py --endpoint $INVERSE_PROXY_HOSTNAME
 ```
 
 
