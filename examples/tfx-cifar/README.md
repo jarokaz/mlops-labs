@@ -39,15 +39,15 @@ You will use TFX CLI to compile and deploy the pipeline. The pipeline DSL retrie
 
 
 ```
-export PROJECT_ID=$(gcloud config get-value core/project)
-export GKE_CLUSTER_NAME=[YOUR KFP CLUSTER]
+export PROJECT_ID=[YOUR PROJECT ID]
+export GKE_CLUSTER_NAME=[YOUR KFP CLUSTER NAMESPACE]
 export NAMESPACE=[NAMESPACE WHERE KFP IS INSTALLED]
 export GCP_REGION=[YOUR REGION]
 export ZONE=[ZONE OF YOUR GKE CLUSTER]
 export ARTIFACT_STORE_URI=[YOUR GCS BUCKET]
 
 export GCS_STAGING_PATH=${ARTIFACT_STORE_URI}/staging
-export DATA_ROOT_URI=gs://workshop-datasets/covertype/small
+export DATA_ROOT_URI=gs://workshop-datasets/cifar10
 
 gcloud container clusters get-credentials $GKE_CLUSTER_NAME --zone $ZONE
 export INVERSE_PROXY_HOSTNAME=$(kubectl describe configmap inverse-proxy-config -n $NAMESPACE | grep "googleusercontent.com")
@@ -69,7 +69,7 @@ As you are debugging the pipeline DSL, you may prefer to first use the `tfx pipe
 
 To compile the DSL
 ```
-tfx pipeline compile --engine kubeflow --pipeline_path pipeline.py
+tfx pipeline compile --engine kubeflow --pipeline_path pipeline/pipeline.py
 ```
 This command creates a pipeline package named `${PIPELINE_NAME}.tar.gz`. The package containes the `pipeline.yaml` file that is a Kubeflow Pipelines YAML specification of the pipeline. 
 
@@ -87,7 +87,7 @@ sed -i $SED_SCRIPT build.yaml
 ```
 
 ```
-tfx pipeline create --engine kubeflow --pipeline_path pipeline_dsl.py --endpoint $INVERSE_PROXY_HOSTNAME
+tfx pipeline create --engine kubeflow --pipeline_path pipeline/pipeline.py --endpoint $INVERSE_PROXY_HOSTNAME
 ```
 
 
