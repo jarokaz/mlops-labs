@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-import kfp
 from typing import Optional, Dict, List, Text
 
 import absl
@@ -28,6 +27,7 @@ from tfx.components.base import executor_spec
 from tfx.components import Evaluator
 from tfx.components import ExampleValidator
 from tfx.components import ImportExampleGen
+from tfx.components import ImporterNode
 from tfx.components import ModelValidator
 from tfx.components import Pusher
 from tfx.components import SchemaGen
@@ -39,7 +39,6 @@ from tfx.extensions.google_cloud_ai_platform.trainer import executor as ai_platf
 from tfx.orchestration import metadata
 from tfx.orchestration import pipeline
 from tfx.orchestration import data_types
-from tfx.orchestration.kubeflow import kubeflow_dag_runner
 from tfx.proto import evaluator_pb2
 from tfx.proto import example_gen_pb2
 from tfx.proto import pusher_pb2
@@ -48,14 +47,17 @@ from tfx.utils.dsl_utils import external_input
 from tfx.types.standard_artifacts import Schema
 
 
+SCHEMA_FOLDER='schema'
+MODULE_FILE='transform_train.py'
 
-def _create_pipeline(pipeline_name: Text, 
+
+def create_pipeline(pipeline_name: Text, 
                      pipeline_root: Text, 
                      data_root_uri: data_types.RuntimeParameter,
-                     module_file_uri: data_types.RuntimeParameter, 
                      train_steps: data_types.RuntimeParameter,
                      eval_steps: data_types.RuntimeParameter,
                      ai_platform_training_args: Dict[Text, Text],
+                     ai_platform_prediction_args: Dict[Text, Text],
                      beam_pipeline_args: List[Text],
                      enable_cache: Optional[bool] = True) -> pipeline.Pipeline:
   """Implements the cifar10 pipeline with TFX."""
@@ -68,31 +70,33 @@ def _create_pipeline(pipeline_name: Text,
   ])
   generate_examples = ImportExampleGen(input=examples, input_config=input_split)
     
-  # Computes statistics over data for visualization and example validation.
-  generate_statistics = StatisticsGen(examples=generate_examples.outputs['examples'])
+  # Import a user-provided schema
+  import_schema = ImporterNode(
+      instance_name='import_user_schema',
+      source_uri=SCHEMA_FOLDER,
+      artifact_type=Schema)
 
-  # Generates schema based on statistics files.
-  infer_schema = SchemaGen(
-      statistics=generate_statistics.outputs['statistics'], infer_feature_shape=True)
+  # Generate statistics. Note that StatisticsGen does not support semantic domains yet.  
+  generate_statistics = StatisticsGen(examples=generate_examples.outputs['examples'])
 
   # Performs anomaly detection based on statistics and data schema.
   validate_stats = ExampleValidator(
       statistics=generate_statistics.outputs['statistics'],
-      schema=infer_schema.outputs['schema'])
+      schema=import_schema.outputs["result"])
 
   # Performs transformations and feature engineering in training and serving.
   transform = Transform(
       examples=generate_examples.outputs['examples'],
-      schema=infer_schema.outputs['schema'],
-      module_file=module_file_uri)
+      schema=import_schema.outputs["result"],
+      module_file=MODULE_FILE)
 
   # Uses user-provided Python function that implements a model using TF-Learn.
   train = Trainer(
       custom_executor_spec=executor_spec.ExecutorClassSpec(
           ai_platform_trainer_executor.Executor),
-      module_file=module_file_uri,
+      module_file=MODULE_FILE,
       examples=transform.outputs['transformed_examples'],
-      schema=infer_schema.outputs['schema'],
+      schema=import_schema.outputs["result"],
       transform_graph=transform.outputs['transform_graph'],
       train_args={'num_steps': train_steps},
       eval_args={'num_steps': eval_steps},
@@ -123,92 +127,11 @@ def _create_pipeline(pipeline_name: Text,
       pipeline_name=pipeline_name,
       pipeline_root=pipeline_root,
       components=[
-          generate_examples, generate_statistics, infer_schema, validate_stats, transform,
+          generate_examples, generate_statistics, import_schema, validate_stats, transform,
           train, analyze, validate, deploy
       ],
       enable_cache=enable_cache,
       beam_pipeline_args=beam_pipeline_args
   )
 
-
-if __name__ == '__main__':
-
-  # Get evironment settings from environment variables
-  pipeline_name = os.environ.get('PIPELINE_NAME')
-  project_id = os.environ.get('PROJECT_ID')
-  gcp_region = os.environ.get('GCP_REGION')
-  pipeline_image = os.environ.get('TFX_IMAGE')
-  data_root_uri = os.environ.get('DATA_ROOT_URI')
-  artifact_store_uri = os.environ.get('ARTIFACT_STORE_URI')
-  runtime_version = os.environ.get('RUNTIME_VERSION')
-  python_version = os.environ.get('PYTHON_VERSION')
-
-  # Set values for the compile time parameters
-    
-  ai_platform_training_args = {
-      'project': project_id,
-      'region': gcp_region,
-      'masterConfig': {
-          'imageUri': pipeline_image,
-      }
-  }
-
-
-  beam_tmp_folder = '{}/beam/tmp'.format(artifact_store_uri)
-  beam_pipeline_args = [
-      '--runner=DataflowRunner',
-      '--experiments=shuffle_mode=auto',
-      '--project=' + project_id,
-      '--temp_location=' + beam_tmp_folder,
-      '--region=' + gcp_region,
-  ]
-  
-  # Set default values for the pipeline runtime parameters
-    
-  module_file_uri = data_types.RuntimeParameter(
-      name='module-file_uri',
-      default='transform_train.py',
-      ptype=Text,
-  )
-  
-  data_root_uri = data_types.RuntimeParameter(
-      name='data-root-uri',
-      default=data_root_uri,
-      ptype=Text
-  )
-
-  train_steps = data_types.RuntimeParameter(
-      name='train-steps',
-      default=500,
-      ptype=int
-  )
-    
-  eval_steps = data_types.RuntimeParameter(
-      name='eval-steps',
-      default=500,
-      ptype=int
-  )
-
-  pipeline_root = '{}/{}/{}'.format(artifact_store_uri, pipeline_name, kfp.dsl.RUN_ID_PLACEHOLDER)
-    
-  # Set KubeflowDagRunner settings
-  metadata_config = kubeflow_dag_runner.get_default_kubeflow_metadata_config()
-  operator_funcs = kubeflow_dag_runner. get_default_pipeline_operator_funcs(use_gcp_sa=True)
-    
-  runner_config = kubeflow_dag_runner.KubeflowDagRunnerConfig(
-      kubeflow_metadata_config=metadata_config,
-      pipeline_operator_funcs=operator_funcs,
-      tfx_image=pipeline_image)
-
-  # Compile the pipeline
-  kubeflow_dag_runner.KubeflowDagRunner(config=runner_config).run(
-      _create_pipeline(
-          pipeline_name=pipeline_name,
-          pipeline_root=pipeline_root,
-          data_root_uri=data_root_uri,
-          module_file_uri=module_file_uri,
-          train_steps=train_steps,
-          eval_steps=eval_steps,
-          ai_platform_training_args=ai_platform_training_args,
-          beam_pipeline_args=beam_pipeline_args))
 
