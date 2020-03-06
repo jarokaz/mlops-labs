@@ -25,7 +25,7 @@ You can read more about the dataset in
 
 
 ## Environment setup
-To build, deploy, and run the pipeline you need an instance of **AI Platform Notebookes**  an **AI Platform Pipelines** environment. 
+To build, deploy, and run the pipeline you need an instance of **AI Platform Notebooks**  and an **AI Platform Pipelines** environment. 
 
 Follow [this instructions](https://cloud.google.com/ai-platform/pipelines/docs/setting-up) to provision the **AI Platform Notebooks** instance. Use the TensorFlow 2.1 image.
 
