@@ -24,7 +24,7 @@ You can read more about the dataset in
 [CIFAR dataset homepage](https://www.cs.toronto.edu/~kriz/cifar.html).
 
 
-## Environment setup
+## Setting up the environment
 To run the example, you need an instance of **AI Platform Notebooks**  and an **AI Platform Pipelines** environment. 
 
 Follow [this instructions](https://cloud.google.com/ai-platform/notebooks/docs/create-new) to provision the **AI Platform Notebooks** instance. Use the TensorFlow 2.1 image.
