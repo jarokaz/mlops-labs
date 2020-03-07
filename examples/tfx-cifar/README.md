@@ -1,4 +1,4 @@
-# CIFAR 10 Example
+# CIFAR10 Classifier Example
 
 This example demonstrates a continuous training TFX pipeline that trains an image classification model on CIFAR10 dataset. The pipeline runs on **AI Platform Pipelines**  and uses **Cloud Dataflow** and **Cloud AI Platform Training and Prediction** as as execution runtimes. 
 
