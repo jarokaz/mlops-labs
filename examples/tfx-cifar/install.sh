@@ -24,7 +24,7 @@ gsutil mb $BUCKET_NAME
 
 echo INFO: Creating a conda environment to host TFX and KFP SDKs
 conda create -n tfx python=3.7 -y
-conda activate tfx
+source activate tfx
 
 echo INFO: Installing TFX and KFP SDKs
 cat > requirements.txt << EOF
