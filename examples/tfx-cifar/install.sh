@@ -22,6 +22,10 @@ echo INFO: Creating a GCS bucket
 BUCKET_NAME=gs://${NAME_PREFIX}-artifact-store
 gsutil mb $BUCKET_NAME
 
+echo INFO: Creating a conda environment to host TFX and KFP SDKs
+conda create -n tfx python=3.7 -y
+conda activate tfx
+
 echo INFO: Installing TFX and KFP SDKs
 cat > requirements.txt << EOF
 pandas<1.0.0
