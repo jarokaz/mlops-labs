@@ -1,8 +1,8 @@
 # CIFAR 10 Example
 
-The CIFAR 10 example demonstrates the continuous training TFX pipeline that trains an image classification model on CIFAR10 dataset. The pipeline runs on a standalone deployment of Kubeflow Pipelines on GKE and uses Cloud Dataflow and Cloud AI Platform Training as compute runtimes for data validation and transformation and model training and analysis. 
+This example demonstrates a continuous training TFX pipeline that trains an image classification model on CIFAR10 dataset. The pipeline runs on **AI Platform Pipelines**  and uses **Cloud Dataflow** and **Cloud AI Platform Training and Prediction** as as execution runtimes. 
 
-![Lab 14 diagram](/images/lab-14-diagram.png).
+![TFX on CAPIP](/images/tfx-caip-1.png).
 
 
 
