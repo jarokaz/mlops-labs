@@ -1,4 +1,5 @@
-# Copyright 2020 Google Inc. All Rights Reserved.
+#!/bin/bash
+# Copyright 2019 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -11,14 +12,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-apiVersion: skaffold/v2alpha4
-kind: Config
-build:
-  artifacts:
-  - context: .
-    image: gcr.io/mlops-workshop/custom_tfx_cifar10
-  googleCloudBuild: {}
-  tagPolicy:
-    envTemplate:
-      template: "{{.IMAGE_NAME}}:latest"
+
+# Provision the KFP environment
+
+
+PROJECT_ID=$(gcloud config get-value core/project)
+NAME_PREFIX=${1:-$PROJECT_ID}
+
+echo INFO: Creating a GCS bucket 
+BUCKET_NAME=gs://${NAME_PREFIX}-artifact-store
+gsutil mb $BUCKET_NAME
+
+echo INFO: Installing TFX and KFP SDKs
+cat > requirements.txt << EOF
+tfx==0.21
+kfp==0.2.5
+EOF
+python -m pip install -U -r requirements.txt --ignore-installed PyYAML
