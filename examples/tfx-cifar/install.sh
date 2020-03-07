@@ -24,6 +24,7 @@ gsutil mb $BUCKET_NAME
 
 echo INFO: Installing TFX and KFP SDKs
 cat > requirements.txt << EOF
+pandas<1.0.0
 tfx==0.21
 kfp==0.2.5
 EOF
