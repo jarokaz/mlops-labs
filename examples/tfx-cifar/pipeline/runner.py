@@ -83,7 +83,7 @@ if __name__ == '__main__':
     
   runner_config = kubeflow_dag_runner.KubeflowDagRunnerConfig(
       kubeflow_metadata_config=metadata_config,
-      pipeline_operator_funcs=operator_funcs,
+      #pipeline_operator_funcs=operator_funcs,
       tfx_image=Config.TFX_IMAGE)
 
   # Compile the pipeline

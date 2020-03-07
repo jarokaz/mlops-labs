@@ -1,21 +1,25 @@
 feature {
   name: "image_raw"
+  value_count {
+    min: 1
+    max: 1
+  }
   type: BYTES
+  domain: "Soil_Type"
   presence {
     min_fraction: 1.0
     min_count: 1
   }
-  shape {
-    dim {
-      size: 1
-    }
-  }
 }
 feature {
   name: "label"
+  value_count {
+    min: 1
+    max: 1
+  }
   type: INT
   int_domain {
-    name: "image_classes"
+    name: "classes"
     min: 0
     max: 9
     is_categorical: true
@@ -23,10 +27,5 @@ feature {
   presence {
     min_fraction: 1.0
     min_count: 1
-  }
-  shape {
-    dim {
-      size: 1
-    }
   }
 }
