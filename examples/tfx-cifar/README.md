@@ -1,8 +1,8 @@
-# CIFAR 10 Example
+# CIFAR10 Classifier Example
 
-The CIFAR 10 example demonstrates the continuous training TFX pipeline that trains an image classification model on CIFAR10 dataset. The pipeline runs on a standalone deployment of Kubeflow Pipelines on GKE and uses Cloud Dataflow and Cloud AI Platform Training as compute runtimes for data validation and transformation and model training and analysis. 
+This example demonstrates a continuous training TFX pipeline that trains an image classification model on CIFAR10 dataset. The pipeline runs on **AI Platform Pipelines**  and uses **Cloud Dataflow** and **Cloud AI Platform Training and Prediction** as as execution runtimes. 
 
-![Lab 14 diagram](/images/lab-14-diagram.png).
+![TFX on CAPIP](/images/tfx-caip-1.png).
 
 
 
@@ -24,12 +24,23 @@ You can read more about the dataset in
 [CIFAR dataset homepage](https://www.cs.toronto.edu/~kriz/cifar.html).
 
 
-## Environment setup
-To build, deploy, and run the pipeline you need an instance of **AI Platform Notebooks**  and an **AI Platform Pipelines** environment. 
+## Setting up the environment
+To run the example, you need an instance of **AI Platform Notebooks**  and an **AI Platform Pipelines** environment. 
 
 Follow [this instructions](https://cloud.google.com/ai-platform/notebooks/docs/create-new) to provision the **AI Platform Notebooks** instance. Use the TensorFlow 2.1 image.
 
 Follow [this instructions](https://cloud.google.com/ai-platform/pipelines/docs/setting-up) to provision the **AI Platform Pipelines** environment.
+
+## Running the example
+To run the example:
+1. Connect to **JupyterLab** on your **AI Platform Notebooks** instance.
+2. Open the **JupyterLab** terminal.
+3. Clone this repo in the home folder.
+```
+cd
+git clone https://github.com/jarokaz/mlops-labs.git
+```
+4. Open and walk through the `cifar10-tfx.ipynb` notebook in the `mlops-labs/examples/tfx-cifar` folder.
 
 
 
