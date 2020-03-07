@@ -25,7 +25,7 @@ You can read more about the dataset in
 
 
 ## Setting up the environment
-To run the example, you need to enable the required cloud services and to provision instance of **AI Platform Notebooks**, an instance **AI Platform Pipelines**, and a **Cloud Storage** bucket.
+To run the example, you need to enable the required cloud services and to provision instance of **AI Platform Notebooks** and an instance **AI Platform Pipelines**.
 
 ### Enabling services
 To enable the services required by the sample.
@@ -47,12 +47,6 @@ ml.googleapis.com \
 dataflow.googleapis.com
 ```
 
-### Creating a Cloud Storage bucket
-```
-BUCKET_NAME=gs://${PROJECT_ID}-artifact-store
-
-gsutil mb $BUCKET_NAME
-```
 
 ### Provisioning an instance of **AI Platform Notebooks**
 Follow [this instructions](https://cloud.google.com/ai-platform/notebooks/docs/create-new) to provision the **AI Platform Notebooks** instance. Use the TensorFlow 2.1 image.
@@ -69,7 +63,8 @@ To run the example:
 cd
 git clone https://github.com/jarokaz/mlops-labs.git
 ```
-4. Open and walk through the `cifar10-tfx.ipynb` notebook in the `mlops-labs/examples/tfx-cifar` folder.
+4. Run the `install.sh` script from the `mlops-labs/examples/tfx-cifar` folder. The script installs TFX and KFP SDKs and creates a GCS bucket to be used as an artifact store.
+5. Open and walk through the `cifar10-tfx.ipynb` notebook in the `mlops-labs/examples/tfx-cifar` folder.
 
 
 
