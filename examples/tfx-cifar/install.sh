@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Provision the KFP environment
-
+# Install TFX and KFP SDKs
 
 PROJECT_ID=$(gcloud config get-value core/project)
 NAME_PREFIX=${1:-$PROJECT_ID}
@@ -29,3 +28,8 @@ tfx==0.21
 kfp==0.2.5
 EOF
 python -m pip install -U -r requirements.txt --ignore-installed PyYAML
+
+echo INFO: Installing skaffold
+curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && chmod +x skaffold && sudo mv skaffold /usr/local/bin/
+
+
