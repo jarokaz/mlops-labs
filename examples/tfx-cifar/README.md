@@ -25,11 +25,22 @@ You can read more about the dataset in
 
 
 ## Environment setup
-To build, deploy, and run the pipeline you need an instance of **AI Platform Notebooks**  and an **AI Platform Pipelines** environment. 
+To run the example, you need an instance of **AI Platform Notebooks**  and an **AI Platform Pipelines** environment. 
 
 Follow [this instructions](https://cloud.google.com/ai-platform/notebooks/docs/create-new) to provision the **AI Platform Notebooks** instance. Use the TensorFlow 2.1 image.
 
 Follow [this instructions](https://cloud.google.com/ai-platform/pipelines/docs/setting-up) to provision the **AI Platform Pipelines** environment.
+
+## Running the example
+To run the example:
+1. Connect to **JupyterLab** on your **AI Platform Notebooks** instance.
+2. Open the **JupyterLab** terminal.
+3. Clone this repo in the home folder.
+```
+cd
+git clone https://github.com/jarokaz/mlops-labs.git
+```
+4. Open and walk through the `cifar10-tfx.ipynb` notebook in the `mlops-labs/examples/tfx-cifar` folder.
 
 
 
