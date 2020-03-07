@@ -25,7 +25,7 @@ You can read more about the dataset in
 
 
 ## Setting up the environment
-To run the example, you need to enable the required cloud services and to provision instance of **AI Platform Notebooks**  and an instance **AI Platform Pipelines**. 
+To run the example, you need to enable the required cloud services and to provision instance of **AI Platform Notebooks**, an instance **AI Platform Pipelines**, and a **Cloud Storage** bucket.
 
 ### Enabling services
 To enable the services required by the sample.
@@ -45,6 +45,13 @@ containerregistry.googleapis.com \
 containeranalysis.googleapis.com \
 ml.googleapis.com \
 dataflow.googleapis.com
+```
+
+### Creating a Cloud Storage bucket
+```
+BUCKET_NAME=gs://${PROJECT_ID}-artifact-store
+
+gsutil mb $BUCKET_NAME
 ```
 
 ### Provisioning an instance of **AI Platform Notebooks**
