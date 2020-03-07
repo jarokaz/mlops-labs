@@ -25,10 +25,32 @@ You can read more about the dataset in
 
 
 ## Setting up the environment
-To run the example, you need an instance of **AI Platform Notebooks**  and an **AI Platform Pipelines** environment. 
+To run the example, you need to enable the required cloud services and to provision instance of **AI Platform Notebooks**  and an instance **AI Platform Pipelines**. 
 
+### Enabling services
+To enable the services required by the sample.
+1. Launch [Cloud Shell](https://cloud.google.com/shell/docs/launching-cloud-shell)
+2. Set your project ID
+```
+PROJECT_ID=[YOUR PROJECT ID]
+
+gcloud config set project $PROJECT_ID
+```
+3. Enable the services
+```
+gcloud services enable \
+container.googleapis.com \
+iam.googleapis.com \
+containerregistry.googleapis.com \
+containeranalysis.googleapis.com \
+ml.googleapis.com \
+dataflow.googleapis.com
+```
+
+### Provisioning an instance of **AI Platform Notebooks**
 Follow [this instructions](https://cloud.google.com/ai-platform/notebooks/docs/create-new) to provision the **AI Platform Notebooks** instance. Use the TensorFlow 2.1 image.
 
+### Provisioning an instance of **AI Platform Pipelines**
 Follow [this instructions](https://cloud.google.com/ai-platform/pipelines/docs/setting-up) to provision the **AI Platform Pipelines** environment.
 
 ## Running the example
