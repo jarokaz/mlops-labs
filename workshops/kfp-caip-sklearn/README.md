@@ -61,6 +61,68 @@ dataflow.googleapis.com
 
 An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench. The instance is configured using a custom container image that includes all Python packages required for the hands-on labs. 
 
+
+1. In [Cloud Shell](https://cloud.google.com/shell/docs/launching-cloud-shell), create a folder in your `home` directory
+```
+cd
+mkdir tmp-workspace
+cd tmp-workspace
+```
+2. Create the requirements file with the Python packages to install in the custom image
+```
+cat > requirements.txt << EOF
+tfx==0.21
+kfp==0.2.5
+tensorboard~=2.1.0
+EOF
+```
+3. Create the Dockerfile defining you custom container image
+```
+cat > Dockerfile << EOF
+FROM gcr.io/deeplearning-platform-release/base-cpu:m42
+RUN apt-get update -y && apt-get -y install kubectl
+RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 \
+&& chmod +x skaffold \
+&& mv skaffold /usr/local/bin
+COPY requirements.txt .
+RUN conda create -n mlops python=3.7 && source activate mlops \
+&& python -m pip install -U -r requirements.txt --ignore-installed PyYAML==3.13 \
+&& python -m ipykernel install --name mlops 
+EOF
+```
+4. Build the image and push it to your project's **Container Registry**
+```
+IMAGE_NAME=mlops-dev
+TAG=latest
+IMAGE_URI="gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${TAG}"
+
+gcloud builds submit --timeout 15m --tag ${IMAGE_URI} .
+```
+5. Create an instance of **AI Platform Notebooks**. Note that you can also create an instance using [GCP Console](https://cloud.google.com/ai-platform/notebooks/docs/custom-container)
+```
+ZONE=[YOUR_ZONE]
+INSTANCE_NAME=[YOUR_INSTANCE_NAME]
+
+IMAGE_FAMILY="common-container"
+IMAGE_PROJECT="deeplearning-platform-release"
+INSTANCE_TYPE="n1-standard-4"
+METADATA="proxy-mode=service_account,container=$IMAGE_URI"
+
+gcloud compute instances create $INSTANCE_NAME \
+    --zone=$ZONE \
+    --image-family=$IMAGE_FAMILY \
+    --machine-type=$INSTANCE_TYPE \
+    --image-project=$IMAGE_PROJECT \
+    --maintenance-policy=TERMINATE \
+    --boot-disk-device-name=${INSTANCE_NAME}-disk \
+    --boot-disk-size=100GB \
+    --boot-disk-type=pd-ssd \
+    --scopes=cloud-platform,userinfo-email \
+    --metadata=$METADATA
+```
+
+After the instance is created, you can connect to [JupyterLab](https://jupyter.org/) IDE by clicking the *OPEN JUPYTERLAB* link in the [AI Platform Notebooks Console](https://console.cloud.google.com/ai-platform/notebooks/instances).
+
 ### Creating an instance of AI Platform Pipelines
 The core component of the lab environment is **AI Platform Pipelines**. To create an instance of **AI Platform Pipelines** follow the [Setting up AI Platform Pipelines](https://cloud.google.com/ai-platform/pipelines/docs/setting-up) how-to guide.
 
