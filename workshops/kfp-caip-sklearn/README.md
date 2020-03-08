@@ -131,7 +131,7 @@ The core component of the lab environment is **AI Platform Pipelines**. To creat
 ## Preparing the lab dataset
 The pipeline developed in the labs sources the dataset from BigQuery. Before proceeding with the lab upload the dataset to BigQuery in your project:
 
-1. Open new terminal in you **JupyterLab**
+1. Connect to your **AI Platform Notebooks** instance and open the new **JupyterLab** terminal.
 
 2. Create the BigQuery dataset and upload the Cover Type csv file.
 ```
