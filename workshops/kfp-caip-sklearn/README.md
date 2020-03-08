@@ -18,9 +18,9 @@ The ML model utilized in the labs  is a multi-class classifier that predicts the
 Before proceeding with the lab exercises you need to set up the lab environment and prepare the lab dataset.
 
 ### Preparing the lab environment
-Follow the instructions in the [environment setup](/environment-setup) folder to set up the environment. 
+You will use the lab environment configured as on the below diagram:
 
-After the environment is ready, connect to your instance of **AI Platform Notebooks**.
+[Lab env](/images/lab-env.png)
 
 ### Preparing the lab dataset
 The pipeline developed in the labs sources the dataset from BigQuery. Before proceeding with the lab upload the dataset to BigQuery in your project:
