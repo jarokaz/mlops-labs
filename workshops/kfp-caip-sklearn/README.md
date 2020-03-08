@@ -20,7 +20,7 @@ Before proceeding with the lab exercises you need to set up the lab environment 
 ### Preparing the lab environment
 You will use the lab environment configured as on the below diagram:
 
-[Lab env](../../images/lab-env.png)
+![Lab env](/images/lab-env.png)
 
 ### Preparing the lab dataset
 The pipeline developed in the labs sources the dataset from BigQuery. Before proceeding with the lab upload the dataset to BigQuery in your project:
