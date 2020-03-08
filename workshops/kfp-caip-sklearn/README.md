@@ -22,6 +22,20 @@ You will use the lab environment configured as on the below diagram:
 
 ![Lab env](/images/lab-env.png)
 
+The core services in the environment are:
+- ML experimentation and development - AI Platform Notebooks 
+- Scalable, serverless model training - AI Platform Training  
+- Scalable, serverless model serving - AI Platform Prediction 
+- Machine learning pipelines - AI Platform Pipelines
+- Distributed data processing - Cloud Dataflow  
+- Analytics data warehouse - BigQuery 
+- Artifact store - Google Cloud Storage 
+- CI/CD tooling - Cloud Build
+    
+In this environment, all services are provisioned in the same [Google Cloud Project](https://cloud.google.com/storage/docs/projects). 
+
+An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench. The instance is configured using a custom container image that should be optimized for a given ML project. In the lab, you will configure the instance optimized for developing KFP and/or TFX pipelines. 
+
 ### Preparing the lab dataset
 The pipeline developed in the labs sources the dataset from BigQuery. Before proceeding with the lab upload the dataset to BigQuery in your project:
 
