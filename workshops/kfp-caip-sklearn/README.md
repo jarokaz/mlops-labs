@@ -34,7 +34,35 @@ The core services in the environment are:
     
 In this environment, all services are provisioned in the same [Google Cloud Project](https://cloud.google.com/storage/docs/projects). 
 
-An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench. The instance is configured using a custom container image that should be optimized for a given ML project. In the lab, you will configure the instance optimized for developing KFP and/or TFX pipelines. 
+#### Enabling Cloud Services
+
+To enable Cloud Services utilized in the lab environment:
+1. Launch [Cloud Shell](https://cloud.google.com/shell/docs/launching-cloud-shell)
+2. Set your project ID
+```
+PROJECT_ID=[YOUR PROJECT ID]
+
+gcloud config set project $PROJECT_ID
+```
+3. Use `gcloud` to enable the services
+```
+gcloud services enable automl.googleapis.com
+gcloud services enable \
+cloudbuild.googleapis.com \
+container.googleapis.com \
+cloudresourcemanager.googleapis.com \
+iam.googleapis.com \
+containerregistry.googleapis.com \
+containeranalysis.googleapis.com \
+ml.googleapis.com \
+dataflow.googleapis.com 
+```
+
+#### Creating an instance of AI Platform Notebooks
+
+An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench. The instance is configured using a custom container image that includes all Python packages required for the hands-on labs. 
+
+
 
 ### Preparing the lab dataset
 The pipeline developed in the labs sources the dataset from BigQuery. Before proceeding with the lab upload the dataset to BigQuery in your project:
