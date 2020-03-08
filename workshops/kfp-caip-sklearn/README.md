@@ -86,7 +86,7 @@ RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/sk
 && mv skaffold /usr/local/bin
 COPY requirements.txt .
 RUN conda create -n mlops python=3.7 && source activate mlops \
-&& python -m pip install -U -r requirements.txt --ignore-installed PyYAML==3.13 \
+&& python -m pip install -U -r requirements.txt \
 && python -m ipykernel install --name mlops 
 EOF
 ```
