@@ -14,10 +14,9 @@ The below diagram represents the workflow orchestrated by the pipeline.
 
 The ML model utilized in the labs  is a multi-class classifier that predicts the type of  forest cover from cartographic data. The model is trained on the [Covertype Data Set](/datasets/covertype/README.md) dataset.
 
-## Lab environment setup
 Before proceeding with the lab exercises you need to set up the lab environment and prepare the lab dataset.
 
-### Preparing the lab environment
+## Preparing the lab environment
 You will use the lab environment configured as on the below diagram:
 
 ![Lab env](/images/lab-env.png)
@@ -34,7 +33,7 @@ The core services in the environment are:
     
 In this environment, all services are provisioned in the same [Google Cloud Project](https://cloud.google.com/storage/docs/projects). 
 
-#### Enabling Cloud Services
+### Enabling Cloud Services
 
 To enable Cloud Services utilized in the lab environment:
 1. Launch [Cloud Shell](https://cloud.google.com/shell/docs/launching-cloud-shell)
@@ -58,13 +57,13 @@ ml.googleapis.com \
 dataflow.googleapis.com 
 ```
 
-#### Creating an instance of AI Platform Notebooks
+### Creating an instance of AI Platform Notebooks
 
 An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench. The instance is configured using a custom container image that includes all Python packages required for the hands-on labs. 
 
 
 
-### Preparing the lab dataset
+## Preparing the lab dataset
 The pipeline developed in the labs sources the dataset from BigQuery. Before proceeding with the lab upload the dataset to BigQuery in your project:
 
 1. Open new terminal in you **JupyterLab**
