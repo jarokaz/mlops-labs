@@ -87,9 +87,9 @@ RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/sk
 && chmod +x skaffold \
 && mv skaffold /usr/local/bin
 COPY requirements.txt .
-RUN conda create -n mlops python=3.7 && source activate mlops \
+RUN conda create -n tfx python=3.7 && source activate tfx \
 && python -m pip install -U -r requirements.txt \
-&& python -m ipykernel install --name mlops 
+&& python -m ipykernel install --name tfx 
 EOF
 ```
 4. Build the image and push it to your project's **Container Registry**
