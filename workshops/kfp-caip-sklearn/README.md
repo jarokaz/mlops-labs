@@ -123,7 +123,13 @@ gcloud compute instances create $INSTANCE_NAME \
     --metadata=$METADATA
 ```
 
-After the instance is created, you can connect to [JupyterLab](https://jupyter.org/) IDE by clicking the *OPEN JUPYTERLAB* link in the [AI Platform Notebooks Console](https://console.cloud.google.com/ai-platform/notebooks/instances).
+6. After the instance is created, you can connect to [JupyterLab](https://jupyter.org/) IDE by clicking the *OPEN JUPYTERLAB* link in the [AI Platform Notebooks Console](https://console.cloud.google.com/ai-platform/notebooks/instances).
+
+7. In the **JupyterLab**, open a terminal and clone this repository in the `home` folder.
+```
+cd home
+git clone https://github.com/jarokaz/mlops-labs.git
+```
 
 ### Creating an instance of AI Platform Pipelines
 The core component of the lab environment is **AI Platform Pipelines**. To create an instance of **AI Platform Pipelines** follow the [Setting up AI Platform Pipelines](https://cloud.google.com/ai-platform/pipelines/docs/setting-up) how-to guide.
@@ -131,7 +137,7 @@ The core component of the lab environment is **AI Platform Pipelines**. To creat
 ## Preparing the lab dataset
 The pipeline developed in the labs sources the dataset from BigQuery. Before proceeding with the lab upload the dataset to BigQuery in your project:
 
-1. Connect to your **AI Platform Notebooks** instance and open the new **JupyterLab** terminal.
+1. In the **JupyterLab**, open a **JupyterLab** terminal.
 
 2. Create the BigQuery dataset and upload the Cover Type csv file.
 ```
@@ -168,6 +174,7 @@ $SCHEMA
 
 
 ## Summary of lab exercises
+
 ### Lab-01 - Using custom containers with AI Platform Training
 In this lab, you will develop, package as a docker image, and run on AI Platform Training a training application that builds a **scikit-learn** classifier. The goal of this lab is to understand and codify the steps of the machine learning workflow that will be orchestrated by the continuous training pipeline.
 
