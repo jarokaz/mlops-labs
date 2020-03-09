@@ -60,7 +60,7 @@ dataflow.googleapis.com
 The core component of the lab environment is **AI Platform Pipelines**. To create an instance of **AI Platform Pipelines** follow the [Setting up AI Platform Pipelines](https://cloud.google.com/ai-platform/pipelines/docs/setting-up) how-to guide.
 
 ### Creating an artifact store
-In the lab environment Google Cloud Storage is used as an artifact store. By default, the name of the bucket is set to `[PROJECT_ID]-artifact-store`. To create the bucket, execute the following command from **Cloud Shell**:
+In the lab environment, Google Cloud Storage is used as an artifact store. By default, the name of the bucket is set to `[PROJECT_ID]-artifact-store`. To create the bucket, execute the following command from **Cloud Shell**:
 
 ```
 BUCKET_NAME=gs://${PROJECT_ID}-artifact-store
