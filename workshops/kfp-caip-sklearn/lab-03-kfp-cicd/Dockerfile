@@ -1,4 +1,3 @@
 FROM gcr.io/deeplearning-platform-release/base-cpu
-RUN pip install https://storage.googleapis.com/ml-pipeline/release/0.2.2/kfp.tar.gz 
-
+RUN pip install kfp==0.2.5
 ENTRYPOINT ["/bin/bash"]

@@ -116,20 +116,20 @@ def _create__pipeline(pipeline_name: Text,
 
   # Checks whether the model passed the validation steps and pushes the model
   # to a file destination if check passed.
-  #deploy = Pusher(
-  #    custom_executor_spec=executor_spec.ExecutorClassSpec(
-  #        ai_platform_pusher_executor.Executor),
-  #    model=train.outputs.model,
-  #    model_blessing=validate.outputs.blessing,
-  #    custom_config={'ai_platform_serving_args': ai_platform_serving_args})
-
   deploy = Pusher(
+      custom_executor_spec=executor_spec.ExecutorClassSpec(
+          ai_platform_pusher_executor.Executor),
       model=train.outputs.model,
       model_blessing=validate.outputs.blessing,
-      push_destination=pusher_pb2.PushDestination(
-          filesystem=pusher_pb2.PushDestination.Filesystem(
-              base_directory=os.path.join(
-                  str(pipeline.ROOT_PARAMETER), 'model_serving'))))
+      custom_config={'ai_platform_serving_args': ai_platform_serving_args})
+
+  #deploy = Pusher(
+  #    model=train.outputs.model,
+  #    model_blessing=validate.outputs.blessing,
+  #    push_destination=pusher_pb2.PushDestination(
+  #        filesystem=pusher_pb2.PushDestination.Filesystem(
+  #            base_directory=os.path.join(
+  #                str(pipeline.ROOT_PARAMETER), 'model_serving'))))
 
 
   return pipeline.Pipeline(

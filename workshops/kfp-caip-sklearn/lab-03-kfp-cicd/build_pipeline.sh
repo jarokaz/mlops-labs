@@ -17,7 +17,7 @@
 # the pipelines and pipelines components 
 
 SUBSTITUTIONS=\
-_INVERTING_PROXY_HOST=[YOUR_INVERSE_PROXY],\
+_INVERTING_PROXY_HOST=675b2ab4c7286ef5-dot-us-central2.pipelines.googleusercontent.com,\
 _TRAINER_IMAGE_NAME=trainer_image,\
 _BASE_IMAGE_NAME=base_image,\
 TAG_NAME=test,\
@@ -25,9 +25,9 @@ _PIPELINE_FOLDER=lab-03-kfp-cicd/pipeline,\
 _PIPELINE_DSL=covertype_training_pipeline.py,\
 _PIPELINE_PACKAGE=covertype_training_pipeline.yaml,\
 _PIPELINE_NAME=covertype_training_deployment,\
-_RUNTIME_VERSION=1.14,\
-_PYTHON_VERSION=3.5,\
-_COMPONENT_URL_SEARCH_PREFIX=https://raw.githubusercontent.com/kubeflow/pipelines/0.2.4/components/gcp/
+_RUNTIME_VERSION=1.15,\
+_PYTHON_VERSION=3.7,\
+_COMPONENT_URL_SEARCH_PREFIX=https://raw.githubusercontent.com/kubeflow/pipelines/0.2.5/components/gcp/
 
 
 gcloud builds submit .. --config cloudbuild.yaml --substitutions $SUBSTITUTIONS
