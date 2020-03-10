@@ -47,7 +47,7 @@ export INVERSE_PROXY_HOSTNAME=$(kubectl describe configmap inverse-proxy-config 
 
 export PIPELINE_NAME=tfx_covertype_continuous_training
 export TFX_IMAGE=gcr.io/${PROJECT_ID}/custom_tfx:latest
-export RUNTIME_VERSION=1.15
+export RUNTIME_VERSION=2.1
 export PYTHON_VERSION=3.7
 ```
 
