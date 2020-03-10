@@ -53,9 +53,6 @@ To maintain the consistency between the development environment (AI Platform Not
 
 #### Building the training image
 
-
-MAKE SURE to update the Dockerfile in the `trainer_image` folder with the URI pointing to your Container Registry.
-
 ```
 IMAGE_NAME=trainer_image
 TAG=latest
@@ -66,10 +63,6 @@ gcloud builds submit --timeout 15m --tag ${TRAINER_IMAGE} trainer_image
 ```
 
 #### Building the base image for custom components
- 
-
-MAKE SURE to update the Dockerfile in the `base_image` folder with the URI pointing to your Container Registry.
-
 
 ```
 IMAGE_NAME=base_image
