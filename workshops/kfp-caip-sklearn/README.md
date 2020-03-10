@@ -83,7 +83,7 @@ cd tmp-workspace
 ```
 cat > requirements.txt << EOF
 pandas<1
-scikit-learn==0.20.4
+scikit-learn==0.22
 tfx==0.21
 kfp==0.2.5
 tensorboard~=2.1.0
