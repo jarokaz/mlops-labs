@@ -4,7 +4,7 @@ This series of hands on labs guides you through the process of implementing a Te
 
 The below diagram represents the workflow orchestrated by the pipeline.
 
-![Lab 14 diagram](/images/lab-14-diagram.png).
+![TFX_CAIP](/images/tfx-caip.png).
 
 The ML model utilized in the labs  is a multi-class classifier that predicts the type of  forest cover from cartographic data. The model is trained on the [Covertype Data Set](/datasets/covertype/README.md) dataset.
 
