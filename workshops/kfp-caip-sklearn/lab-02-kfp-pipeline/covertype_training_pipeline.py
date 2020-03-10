@@ -215,4 +215,4 @@ def covertype_train(project_id,
         python_version=PYTHON_VERSION,
         replace_existing_version=replace_existing_version)
 
-  kfp.dsl.get_pipeline_conf().add_op_transformer(use_gcp_secret('user-gcp-sa'))
+ # kfp.dsl.get_pipeline_conf().add_op_transformer(use_gcp_secret('user-gcp-sa'))
