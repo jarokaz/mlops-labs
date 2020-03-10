@@ -26,7 +26,7 @@ class Config:
     TFX_IMAGE=os.getenv("KUBEFLOW_TFX_IMAGE", "tensorflow/tfx:0.21.0")
     DATA_ROOT_URI=os.getenv("DATA_ROOT_URI", "gs://workshop-datasets/cifar10")
     ARTIFACT_STORE_URI=os.getenv("ARTIFACT_STORE_URI", "gs://mlops-workshop-artifact-store")
-    RUNTIME_VERSION=os.getenv("RUNTIME_VERSION", "1.15")
+    RUNTIME_VERSION=os.getenv("RUNTIME_VERSION", "2.1")
     PYTHON_VERSION=os.getenv("PYTHON_VERSION", "3.7")
     
     
