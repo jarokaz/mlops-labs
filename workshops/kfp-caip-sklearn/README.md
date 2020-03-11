@@ -82,10 +82,8 @@ cd tmp-workspace
 2. Create the requirements file with the Python packages to install in the custom image
 ```
 cat > requirements.txt << EOF
-pandas<1
-tfx==0.21
 kfp==0.2.5
-tensorboard~=2.1.0
+fire
 gcsfs
 EOF
 ```
@@ -95,13 +93,8 @@ cat > Dockerfile << EOF
 FROM gcr.io/deeplearning-platform-release/base-cpu
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update -y && apt-get -y install kubectl
-RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 \
-&& chmod +x skaffold \
-&& mv skaffold /usr/local/bin
 COPY requirements.txt .
-RUN conda create -n tfx python=3.7 && source activate tfx \
-&& python -m pip install -U -r requirements.txt \
-&& python -m ipykernel install --name tfx 
+RUN python -m pip install -U -r requirements.txt 
 EOF
 ```
 4. Build the image and push it to your project's **Container Registry**
