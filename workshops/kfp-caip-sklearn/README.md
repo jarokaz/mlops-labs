@@ -99,7 +99,7 @@ EOF
 ```
 4. Build the image and push it to your project's **Container Registry**
 ```
-IMAGE_NAME=mlops-dev
+IMAGE_NAME=kfp-dev
 TAG=latest
 IMAGE_URI="gcr.io/${PROJECT_ID}/${IMAGE_NAME}:${TAG}"
 
