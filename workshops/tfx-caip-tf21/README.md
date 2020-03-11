@@ -105,6 +105,9 @@ COPY requirements.txt .
 RUN conda create -n tfx python=3.7 && source activate tfx \
 && python -m pip install -U -r requirements.txt \
 && python -m ipykernel install --name tfx 
+RUN jupyter nbextension enable --py widgetsnbextension \
+&& jupyter nbextension install --py --symlink tensorflow_model_analysis \
+&& jupyter nbextension enable --py tensorflow_model_analysis
 EOF
 ```
 4. Build the image and push it to your project's **Container Registry**
