@@ -104,8 +104,7 @@ RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/sk
 COPY requirements.txt .
 RUN conda create -n tfx python=3.7 && source activate tfx \
 && python -m pip install -U -r requirements.txt \
-&& python -m ipykernel install --name tfx 
-RUN jupyter nbextension enable --py widgetsnbextension \
+&& python -m ipykernel install --name tfx \
 && jupyter nbextension install --py --symlink tensorflow_model_analysis \
 && jupyter nbextension enable --py tensorflow_model_analysis
 EOF
