@@ -43,12 +43,13 @@ from tfx.utils.dsl_utils import external_input
 from tfx.types.standard_artifacts import Schema
 
 
+SCHEMA_FOLDER='schema'
+MODULE_FILE='transform_train.py'
 
-def _create__pipeline(pipeline_name: Text, 
+
+def create_pipeline(pipeline_name: Text, 
                       pipeline_root: Text, 
                       data_root_uri: data_types.RuntimeParameter,
-                      module_file_uri: data_types.RuntimeParameter, 
-                      schema_uri: data_types.RuntimeParameter,
                       train_steps: data_types.RuntimeParameter,
                       eval_steps: data_types.RuntimeParameter,
                       ai_platform_training_args: Dict[Text, Text],
@@ -73,7 +74,7 @@ def _create__pipeline(pipeline_name: Text,
   # Import a user-provided schema
   import_schema = ImporterNode(
       instance_name='import_user_schema',
-      source_uri=schema_uri,
+      source_uri=SCHEMA_FOLDER,
       artifact_type=Schema)
   
   # Generates schema based on statistics files.Even though, we use user-provided schema
@@ -89,14 +90,14 @@ def _create__pipeline(pipeline_name: Text,
   transform = Transform(
       examples=generate_examples.outputs.examples,
       schema=import_schema.outputs.result,
-      module_file=module_file_uri)
+      module_file=MODULE_FILE)
 
   # Uses user-provided Python function that implements a model using
   # TensorFlow's Estimators API.
   train = Trainer(
       custom_executor_spec=executor_spec.ExecutorClassSpec(
           ai_platform_trainer_executor.Executor),
-      module_file=module_file_uri,
+      module_file=MODULE_FILE,
       transformed_examples=transform.outputs.transformed_examples,
       schema=import_schema.outputs.result,
       transform_graph=transform.outputs.transform_graph,
@@ -123,14 +124,6 @@ def _create__pipeline(pipeline_name: Text,
       model_blessing=validate.outputs.blessing,
       custom_config={'ai_platform_serving_args': ai_platform_serving_args})
 
-  #deploy = Pusher(
-  #    model=train.outputs.model,
-  #    model_blessing=validate.outputs.blessing,
-  #    push_destination=pusher_pb2.PushDestination(
-  #        filesystem=pusher_pb2.PushDestination.Filesystem(
-  #            base_directory=os.path.join(
-  #                str(pipeline.ROOT_PARAMETER), 'model_serving'))))
-
 
   return pipeline.Pipeline(
       pipeline_name=pipeline_name,
@@ -144,98 +137,3 @@ def _create__pipeline(pipeline_name: Text,
   )
 
 
-if __name__ == '__main__':
-
-  # Get evironment settings from environment variables
-  pipeline_name = os.environ.get('PIPELINE_NAME')
-  project_id = os.environ.get('PROJECT_ID')
-  gcp_region = os.environ.get('GCP_REGION')
-  pipeline_image = os.environ.get('TFX_IMAGE')
-  data_root_uri = os.environ.get('DATA_ROOT_URI')
-  artifact_store_uri = os.environ.get('ARTIFACT_STORE_URI')
-  runtime_version = os.environ.get('RUNTIME_VERSION')
-  python_version = os.environ.get('PYTHON_VERSION')
-
-  # Set values for the compile time parameters
-    
-  ai_platform_training_args = {
-      'project': project_id,
-      'region': gcp_region,
-      'masterConfig': {
-          'imageUri': pipeline_image,
-      }
-  }
-
-  ai_platform_serving_args = {
-      'model_name': 'model_' + pipeline_name,
-      'project_id': project_id,
-      'runtimeVersion': runtime_version,
-      'pythonVersion': python_version
-  }
-
-  beam_tmp_folder = '{}/beam/tmp'.format(artifact_store_uri)
-  beam_pipeline_args = [
-      '--runner=DataflowRunner',
-      '--experiments=shuffle_mode=auto',
-      '--project=' + project_id,
-      '--temp_location=' + beam_tmp_folder,
-      '--region=' + gcp_region,
-  ]
-  
-  # Set default values for the pipeline runtime parameters
-    
-  module_file_uri = data_types.RuntimeParameter(
-      name='module-file_uri',
-      default='transform_train.py',
-      ptype=Text,
-  )
-
-  schema_uri = data_types.RuntimeParameter(
-      name='schema-uri',
-      default='schema',
-      ptype=Text,
-  )
-  
-  data_root_uri = data_types.RuntimeParameter(
-      name='data-root-uri',
-      default=data_root_uri,
-      ptype=Text
-  )
-
-  train_steps = data_types.RuntimeParameter(
-      name='train-steps',
-      default=500,
-      ptype=int
-  )
-    
-  eval_steps = data_types.RuntimeParameter(
-      name='eval-steps',
-      default=500,
-      ptype=int
-  )
-  
-
-  pipeline_root = '{}/{}/{}'.format(artifact_store_uri, pipeline_name, kfp.dsl.RUN_ID_PLACEHOLDER)
-    
-  # Set KubeflowDagRunner settings
-  metadata_config = kubeflow_dag_runner.get_default_kubeflow_metadata_config()
-  operator_funcs = kubeflow_dag_runner. get_default_pipeline_operator_funcs(use_gcp_sa=True)
-    
-  runner_config = kubeflow_dag_runner.KubeflowDagRunnerConfig(
-      kubeflow_metadata_config=metadata_config,
- #     pipeline_operator_funcs=operator_funcs,
-      tfx_image=pipeline_image)
-
-  # Compile the pipeline
-  kubeflow_dag_runner.KubeflowDagRunner(config=runner_config).run(
-      _create__pipeline(
-          pipeline_name=pipeline_name,
-          pipeline_root=pipeline_root,
-          data_root_uri=data_root_uri,
-          module_file_uri=module_file_uri,
-          schema_uri=schema_uri,
-          train_steps=train_steps,
-          eval_steps=eval_steps,
-          ai_platform_training_args=ai_platform_training_args,
-          ai_platform_serving_args=ai_platform_serving_args,
-          beam_pipeline_args=beam_pipeline_args))
