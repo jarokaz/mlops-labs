@@ -95,7 +95,7 @@ EOF
 3. Create the Dockerfile defining you custom container image
 ```
 cat > Dockerfile << EOF
-FROM gcr.io/deeplearning-platform-release/base-cpu
+FROM gcr.io/deeplearning-platform-release/tf2-cpu.2-1
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update -y && apt-get -y install kubectl
 RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 \
