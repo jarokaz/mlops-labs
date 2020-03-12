@@ -129,7 +129,7 @@ git clone https://github.com/jarokaz/mlops-labs.git
 
 
 ## Preparing the lab dataset
-The pipeline developed in the labs sources the dataset from BigQuery. Before proceeding with the lab upload the dataset to BigQuery in your project:
+The pipeline ingests data from BigQuery. Before proceeding with the labs upload the *Covertype* dataset to BigQuery:
 
 1. In the **JupyterLab**, open a **JupyterLab** terminal.
 
