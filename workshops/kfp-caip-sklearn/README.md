@@ -6,13 +6,13 @@ The below diagram represents the workflow orchestrated by the pipeline.
 
 ![Training pipeline](/images/kfp-caip.png).
 
-1. The source data is in BigQuery
-2. BigQuery is used to prepare training, evaluation, and testing data splits, 
-3. AI Platform Training is used to tune hyperparameters and train a scikit-learn model, and
-4. The model's performance is validated against a configurable performance threshold
-4. If the model meets or exceeds the performance requirements it is deployed as an online service using AI Platform Prediction
+1. Source data is in BigQuery
+2. BigQuery is used to prepare training, evaluation, and testing data splits
+3. AI Platform Training is used to tune hyperparameters and train a scikit-learn model
+4. The model's performance is validated against a performance threshold
+4. If the model meets or exceeds the performance the performance threshold it is deployed as an online service using AI Platform Prediction
 
-The ML model utilized in the labs  is a multi-class classifier that predicts the type of  forest cover from cartographic data. The model is trained on the [Covertype Data Set](/datasets/covertype/README.md) dataset.
+The ML model trained by the pipeline  is a multi-class classifier that predicts the type of  forest cover from cartographic data. The model is trained on the [Covertype Data Set](/datasets/covertype/README.md) dataset.
 
 Before proceeding with the lab exercises you need to set up the lab environment and prepare the lab dataset.
 
