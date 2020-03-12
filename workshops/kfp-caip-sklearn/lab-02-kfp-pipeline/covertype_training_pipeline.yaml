@@ -804,14 +804,14 @@
         \ = 'N/A'\n    metric_value = 0\n\n  # Export the metric\n  metrics = {\n\
         \      'metrics': [{\n          'name': metric_name,\n          'numberValue':\
         \ float(metric_value)\n      }]\n  }\n\n  return (metric_name, metric_value,\
-        \ json.dumps(metrics))\n\ndef _serialize_float(float_value: float) -> str:\n\
+        \ json.dumps(metrics))\n\ndef _serialize_str(str_value: str) -> str:\n   \
+        \ if not isinstance(str_value, str):\n        raise TypeError('Value \"{}\"\
+        \ has type \"{}\" instead of str.'.format(str(str_value), str(type(str_value))))\n\
+        \    return str_value\n\ndef _serialize_float(float_value: float) -> str:\n\
         \    if isinstance(float_value, str):\n        return float_value\n    if\
         \ not isinstance(float_value, (float, int)):\n        raise TypeError('Value\
         \ \"{}\" has type \"{}\" instead of float.'.format(str(float_value), str(type(float_value))))\n\
-        \    return str(float_value)\n\ndef _serialize_str(str_value: str) -> str:\n\
-        \    if not isinstance(str_value, str):\n        raise TypeError('Value \"\
-        {}\" has type \"{}\" instead of str.'.format(str(str_value), str(type(str_value))))\n\
-        \    return str_value\n\nimport argparse\n_parser = argparse.ArgumentParser(prog='Evaluate\
+        \    return str(float_value)\n\nimport argparse\n_parser = argparse.ArgumentParser(prog='Evaluate\
         \ model', description='Evaluates a trained sklearn model.')\n_parser.add_argument(\"\
         --dataset-path\", dest=\"dataset_path\", type=str, required=True, default=argparse.SUPPRESS)\n\
         _parser.add_argument(\"--model-path\", dest=\"model_path\", type=str, required=True,\
@@ -896,15 +896,14 @@
         \n  best_trial = response['trainingOutput']['trials'][0]\n\n  metric_value\
         \ = best_trial['finalMetric']['objectiveValue']\n  alpha = float(best_trial['hyperparameters']['alpha'])\n\
         \  max_iter = int(best_trial['hyperparameters']['max_iter'])\n\n  return (metric_value,\
-        \ alpha, max_iter)\n\ndef _serialize_float(float_value: float) -> str:\n \
-        \   if isinstance(float_value, str):\n        return float_value\n    if not\
-        \ isinstance(float_value, (float, int)):\n        raise TypeError('Value \"\
-        {}\" has type \"{}\" instead of float.'.format(str(float_value), str(type(float_value))))\n\
-        \    return str(float_value)\n\ndef _serialize_int(int_value: int) -> str:\n\
-        \    if isinstance(int_value, str):\n        return int_value\n    if not\
-        \ isinstance(int_value, int):\n        raise TypeError('Value \"{}\" has type\
-        \ \"{}\" instead of int.'.format(str(int_value), str(type(int_value))))\n\
-        \    return str(int_value)\n\nimport argparse\n_parser = argparse.ArgumentParser(prog='Retrieve\
+        \ alpha, max_iter)\n\ndef _serialize_int(int_value: int) -> str:\n    if isinstance(int_value,\
+        \ str):\n        return int_value\n    if not isinstance(int_value, int):\n\
+        \        raise TypeError('Value \"{}\" has type \"{}\" instead of int.'.format(str(int_value),\
+        \ str(type(int_value))))\n    return str(int_value)\n\ndef _serialize_float(float_value:\
+        \ float) -> str:\n    if isinstance(float_value, str):\n        return float_value\n\
+        \    if not isinstance(float_value, (float, int)):\n        raise TypeError('Value\
+        \ \"{}\" has type \"{}\" instead of float.'.format(str(float_value), str(type(float_value))))\n\
+        \    return str(float_value)\n\nimport argparse\n_parser = argparse.ArgumentParser(prog='Retrieve\
         \ best run', description='Retrieves the parameters of the best Hypertune run.')\n\
         _parser.add_argument(\"--project-id\", dest=\"project_id\", type=str, required=True,\
         \ default=argparse.SUPPRESS)\n_parser.add_argument(\"--job-id\", dest=\"job_id\"\
@@ -997,7 +996,7 @@
       - |-
         --master_image_uri
       - |-
-        gcr.io/mlops-dev-100/base_image:latest
+        gcr.io/mlops-dev-100/trainer_image:latest
       - |-
         --worker_image_uri
       - ""
@@ -1116,7 +1115,7 @@
       - |-
         --master_image_uri
       - |-
-        gcr.io/mlops-dev-100/base_image:latest
+        gcr.io/mlops-dev-100/trainer_image:latest
       - |-
         --worker_image_uri
       - ""
