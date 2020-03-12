@@ -133,7 +133,7 @@ The pipeline ingests data from BigQuery. Before proceeding with the labs upload 
 
 1. In the **JupyterLab**, open a **JupyterLab** terminal.
 
-2. Create the BigQuery dataset and upload the Cover Type csv file.
+2. Create the BigQuery dataset and upload the *Covertype* csv file.
 ```
 export PROJECT_ID=$(gcloud config get-value core/project)
 
