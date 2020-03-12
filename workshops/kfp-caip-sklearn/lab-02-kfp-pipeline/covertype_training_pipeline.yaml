@@ -677,7 +677,7 @@
       - |-
         --runtime_version
       - |-
-        1.15
+        2.1
       - |-
         --python_version
       - |-
@@ -804,14 +804,14 @@
         \ = 'N/A'\n    metric_value = 0\n\n  # Export the metric\n  metrics = {\n\
         \      'metrics': [{\n          'name': metric_name,\n          'numberValue':\
         \ float(metric_value)\n      }]\n  }\n\n  return (metric_name, metric_value,\
-        \ json.dumps(metrics))\n\ndef _serialize_float(float_value: float) -> str:\n\
+        \ json.dumps(metrics))\n\ndef _serialize_str(str_value: str) -> str:\n   \
+        \ if not isinstance(str_value, str):\n        raise TypeError('Value \"{}\"\
+        \ has type \"{}\" instead of str.'.format(str(str_value), str(type(str_value))))\n\
+        \    return str_value\n\ndef _serialize_float(float_value: float) -> str:\n\
         \    if isinstance(float_value, str):\n        return float_value\n    if\
         \ not isinstance(float_value, (float, int)):\n        raise TypeError('Value\
         \ \"{}\" has type \"{}\" instead of float.'.format(str(float_value), str(type(float_value))))\n\
-        \    return str(float_value)\n\ndef _serialize_str(str_value: str) -> str:\n\
-        \    if not isinstance(str_value, str):\n        raise TypeError('Value \"\
-        {}\" has type \"{}\" instead of str.'.format(str(str_value), str(type(str_value))))\n\
-        \    return str_value\n\nimport argparse\n_parser = argparse.ArgumentParser(prog='Evaluate\
+        \    return str(float_value)\n\nimport argparse\n_parser = argparse.ArgumentParser(prog='Evaluate\
         \ model', description='Evaluates a trained sklearn model.')\n_parser.add_argument(\"\
         --dataset-path\", dest=\"dataset_path\", type=str, required=True, default=argparse.SUPPRESS)\n\
         _parser.add_argument(\"--model-path\", dest=\"model_path\", type=str, required=True,\
@@ -826,7 +826,7 @@
         \    try:\n        os.makedirs(os.path.dirname(output_file))\n    except OSError:\n\
         \        pass\n    with open(output_file, 'w') as f:\n        f.write(_output_serializers[idx](_outputs[idx]))\n"
       "image": |-
-        gcr.io/mlops-workshop/base_image:latest
+        gcr.io/mlops-dev-100/base_image:latest
     "inputs":
       "parameters":
       - "name": |-
@@ -918,7 +918,7 @@
         \    try:\n        os.makedirs(os.path.dirname(output_file))\n    except OSError:\n\
         \        pass\n    with open(output_file, 'w') as f:\n        f.write(_output_serializers[idx](_outputs[idx]))\n"
       "image": |-
-        gcr.io/mlops-workshop/base_image:latest
+        gcr.io/mlops-dev-100/base_image:latest
     "inputs":
       "parameters":
       - "name": |-
@@ -997,7 +997,7 @@
       - |-
         --master_image_uri
       - |-
-        gcr.io/mlops-workshop/trainer_image:latest
+        gcr.io/mlops-dev-100/base_image:latest
       - |-
         --worker_image_uri
       - ""
@@ -1116,7 +1116,7 @@
       - |-
         --master_image_uri
       - |-
-        gcr.io/mlops-workshop/trainer_image:latest
+        gcr.io/mlops-dev-100/base_image:latest
       - |-
         --worker_image_uri
       - ""
