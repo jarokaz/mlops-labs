@@ -173,10 +173,10 @@ $SCHEMA
 In this lab, you will develop, package as a docker image, and run on AI Platform Training a training application that builds a **scikit-learn** classifier. The goal of this lab is to understand and codify the steps of the machine learning workflow that will be orchestrated by the continuous training pipeline.
 
 
-### Lab-02 - Orchestrating model training and deployment with Kubeflow Pipelines and Cloud AI Platform
+### Lab-02 - Implementing continuous training pipeline with Kubeflow Pipelines and Cloud AI Platform
 In this lab, you will author, deploy, and run a **Kubeflow Pipelines (KFP)** pipeline that automates ML workflow steps you experminted with in the first lab.
 
-### Lab-03 - CI/CD for a KFP pipeline
+### Lab-03 - CI/CD for the continuous training pipeline
 In this lab, you will author a **Cloud Build** CI/CD workflow that automates the process of building and deploying of the KFP pipeline authored in the second lab. You will also integrate the **Cloud Build** workflow with **GitHub**.
 
 
