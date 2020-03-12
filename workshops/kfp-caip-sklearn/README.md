@@ -70,7 +70,7 @@ cd
 mkdir tmp-workspace
 cd tmp-workspace
 ```
-2. Create the requirements file with the Python packages to install in the custom image
+2. Create a requirements file with the Python packages to install in the custom image
 ```
 cat > requirements.txt << EOF
 kfp==0.2.5
@@ -78,7 +78,7 @@ fire
 gcsfs
 EOF
 ```
-3. Create the Dockerfile defining you custom container image
+3. Create a Dockerfile defining you custom container image
 ```
 cat > Dockerfile << EOF
 FROM gcr.io/deeplearning-platform-release/base-cpu
