@@ -101,6 +101,19 @@ RUN conda create -n tfx python=3.7 && source activate tfx \
 && jupyter nbextension enable --py tensorflow_model_analysis
 EOF
 ```
+```
+cat > Dockerfile << EOF
+FROM gcr.io/deeplearning-platform-release/tf2-cpu.2-1
+SHELL ["/bin/bash", "-c"]
+RUN apt-get update -y && apt-get -y install kubectl
+RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 \
+&& chmod +x skaffold \
+&& mv skaffold /usr/local/bin
+COPY requirements.txt .
+RUN python -m pip install -U -r requirements.txt 
+EOF
+```
+
 4. Build the image and push it to your project's **Container Registry**
 ```
 IMAGE_NAME=mlops-dev
