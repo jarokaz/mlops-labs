@@ -17,7 +17,7 @@ kind: Config
 build:
   artifacts:
   - context: .
-    image: gcr.io/mlops-workshop/custom_tfx
+    image: gcr.io/mlops-dev-100/custom_tfx
   googleCloudBuild: {}
   tagPolicy:
     envTemplate:
