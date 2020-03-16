@@ -23,12 +23,13 @@ from tfx.components import Evaluator
 from tfx.components import CsvExampleGen
 from tfx.components import ExampleValidator
 from tfx.components import ImporterNode
-from tfx.components import ModelValidator
 from tfx.components import Pusher
+from tfx.components import ResolverNode
 from tfx.components import SchemaGen
 from tfx.components import StatisticsGen
 from tfx.components import Trainer
 from tfx.components import Transform
+from tfx.dsl.experimental import latest_blessed_model_resolver
 from tfx.extensions.google_cloud_ai_platform.pusher import executor as ai_platform_pusher_executor
 from tfx.extensions.google_cloud_ai_platform.trainer import executor as ai_platform_trainer_executor
 from tfx.orchestration import data_types
@@ -40,6 +41,9 @@ from tfx.proto import evaluator_pb2
 from tfx.proto import pusher_pb2
 from tfx.proto import trainer_pb2
 from tfx.utils.dsl_utils import external_input
+from tfx.types import Channel
+from tfx.types.standard_artifacts import Model
+from tfx.types.standard_artifacts import ModelBlessing
 from tfx.types.standard_artifacts import Schema
 
 
@@ -105,22 +109,23 @@ def create_pipeline(pipeline_name: Text,
       eval_args={'num_steps': eval_steps},
       custom_config={'ai_platform_training_args': ai_platform_training_args})
 
+  # Get the latest blessed model for model validation.
+  resolve = ResolverNode(
+      instance_name='latest_blessed_model_resolver',
+      resolver_class=latest_blessed_model_resolver.LatestBlessedModelResolver,
+      model=Channel(type=Model),
+      model_blessing=Channel(type=ModelBlessing))
+
   # Uses TFMA to compute a evaluation statistics over features of a model.
   analyze = Evaluator(
       examples=generate_examples.outputs.examples,
       model=train.outputs.model)
-
-  # Performs quality validation of a candidate model (compared to a baseline).
-  validate = ModelValidator(
-      examples=generate_examples.outputs.examples, 
-      model=train.outputs.model)
-
   
   # Checks whether the model passed the validation steps and pushes the model
   # to a file destination if check passed.
   deploy = Pusher(
       model=train.outputs['model'],
-      model_blessing=validate.outputs['blessing'],
+      model_blessing=analyze.outputs['blessing'],
       push_destination=pusher_pb2.PushDestination(
           filesystem=pusher_pb2.PushDestination.Filesystem(
               base_directory=os.path.join(
@@ -138,7 +143,7 @@ def create_pipeline(pipeline_name: Text,
       pipeline_root=pipeline_root,
       components=[
           generate_examples, generate_statistics, import_schema, infer_schema, validate_stats, transform,
-          train, analyze, validate, deploy
+          train, resolve, analyze , deploy
       ],
       enable_cache=enable_cache,
       beam_pipeline_args=beam_pipeline_args
