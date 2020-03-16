@@ -47,7 +47,6 @@ gcloud config set project $PROJECT_ID
 ```
 3. Use `gcloud` to enable the services
 ```
-gcloud services enable automl.googleapis.com
 gcloud services enable \
 cloudbuild.googleapis.com \
 container.googleapis.com \
