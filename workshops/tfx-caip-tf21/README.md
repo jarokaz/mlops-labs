@@ -14,8 +14,7 @@ The below diagram represents the workflow orchestrated by the pipeline.
 6. The *Transform* component preprocess the data to the format required by the *Trainer* compoment. It also saves the preprocessing TensorFlow graph. 
 7. The *Trainer* starts an AI Platform Training job. The AI Platform Training job is configured to use a custom training container. The AI Platform Training configuration, which includes the URI of the custom training image, is a compile time setting. 
 8. The *Evaluator* component evaluates the trained model against the eval split
-9. The *ModelValidate* component compares the model against a baseline. If this is the first run of the pipeline the model will be blessed regardless of an outcome of the evaluation. In subsequent runs, the baseline is the performance the model from the previous runs.
-10. If the model trained by the pipeline is blessed, the model is deployed to AI Platform Prediction using the *Pusher* component. The configuration of AI Platform Prediction is a compile time setting.
+9. If the model trained by the pipeline is blessed, the model is deployed to AI Platform Prediction using the *Pusher* component. The configuration of AI Platform Prediction is a compile time setting.
 
 The ML model utilized in the labs  is a multi-class classifier that predicts the type of  forest cover from cartographic data. The model is trained on the [Covertype Data Set](/datasets/covertype/README.md) dataset.
 
