@@ -1,7 +1,9 @@
-apiVersion: skaffold/v2alpha4
+apiVersion: skaffold/v1beta13
 build:
   artifacts:
   - context: .
+    docker:
+      dockerfile: Dockerfile
     image: gcr.io/mlops-dev-100/covertype-tfx-image
   googleCloudBuild: {}
   tagPolicy:
