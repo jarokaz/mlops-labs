@@ -78,7 +78,6 @@ cat > requirements.txt << EOF
 pandas<1
 tfx==0.21.2
 kfp==0.2.5
-tensorboard~=2.1.0
 gcsfs
 EOF
 ```
