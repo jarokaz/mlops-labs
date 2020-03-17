@@ -75,10 +75,10 @@ cd
 git clone https://github.com/jarokaz/mlops-labs.git
 ```
 
-From the `workshops/tfx-caip-tf21` folder execute the `install.sh` script to install **TFX** and **KFP** SDKs.
+From the `mlops-labs/workshops/tfx-caip-tf21` folder execute the `install.sh` script to install **TFX** and **KFP** SDKs.
 
 ```
-cd mlops-labs/tfx-caip-tf2`
+cd mlops-labs/workshops/tfx-caip-tf2`
 ./install.sh
 ```
 
