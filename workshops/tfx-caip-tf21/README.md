@@ -71,7 +71,7 @@ After the instance is created, you can connect to [JupyterLab](https://jupyter.o
 
 In the **JupyterLab**, open a terminal and clone this repository in the `home` folder.
 ```
-cd home
+cd
 git clone https://github.com/jarokaz/mlops-labs.git
 ```
 
