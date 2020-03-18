@@ -46,6 +46,9 @@ from tfx.types.standard_artifacts import Model
 from tfx.types.standard_artifacts import ModelBlessing
 from tfx.types.standard_artifacts import Schema
 
+from ml_metadata.proto import metadata_store_pb2
+
+import features
 
 SCHEMA_FOLDER='../schema'
 TRANSFORM_MODULE_FILE='preprocessing.py'
@@ -54,13 +57,15 @@ TRAIN_MODULE_FILE='model.py'
 
 def create_pipeline(pipeline_name: Text, 
                       pipeline_root: Text, 
-                      data_root_uri: data_types.RuntimeParameter,
-                      train_steps: data_types.RuntimeParameter,
-                      eval_steps: data_types.RuntimeParameter,
+                      data_root_uri: Text,
+                      train_steps: int,
+                      eval_steps: int,
                       ai_platform_training_args: Dict[Text, Text],
                       ai_platform_serving_args: Dict[Text, Text],
                       beam_pipeline_args: List[Text],
-                      enable_cache: Optional[bool] = False) -> pipeline.Pipeline:
+                      metadata_connection_config: Optional[
+                        metadata_store_pb2.ConnectionConfig] = None,
+                      enable_cache: Optional[bool] = True) -> pipeline.Pipeline:
   """Trains and deploys the Covertype classifier."""
 
  
@@ -100,15 +105,15 @@ def create_pipeline(pipeline_name: Text,
   # Uses user-provided Python function that implements a model using
   # TensorFlow's Estimators API.
   train = Trainer(
-      custom_executor_spec=executor_spec.ExecutorClassSpec(
-          ai_platform_trainer_executor.Executor),
+#      custom_executor_spec=executor_spec.ExecutorClassSpec(
+#          ai_platform_trainer_executor.Executor),
       module_file=TRAIN_MODULE_FILE,
       transformed_examples=transform.outputs.transformed_examples,
       schema=import_schema.outputs.result,
       transform_graph=transform.outputs.transform_graph,
       train_args={'num_steps': train_steps},
-      eval_args={'num_steps': eval_steps},
-      custom_config={'ai_platform_training_args': ai_platform_training_args})
+      eval_args={'num_steps': eval_steps})
+#      custom_config={'ai_platform_training_args': ai_platform_training_args})
 
   # Get the latest blessed model for model validation.
   resolve = ResolverNode(
@@ -147,6 +152,7 @@ def create_pipeline(pipeline_name: Text,
           train, resolve, analyze , deploy
       ],
       enable_cache=enable_cache,
+      metadata_connection_config=metadata_connection_config,
       beam_pipeline_args=beam_pipeline_args
   )
 
