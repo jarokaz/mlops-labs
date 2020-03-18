@@ -29,6 +29,7 @@ from tfx.components import SchemaGen
 from tfx.components import StatisticsGen
 from tfx.components import Trainer
 from tfx.components import Transform
+from tfx.components.trainer import executor as trainer_executor
 from tfx.dsl.experimental import latest_blessed_model_resolver
 from tfx.extensions.google_cloud_ai_platform.pusher import executor as ai_platform_pusher_executor
 from tfx.extensions.google_cloud_ai_platform.trainer import executor as ai_platform_trainer_executor
@@ -100,15 +101,16 @@ def create_pipeline(pipeline_name: Text,
   # Uses user-provided Python function that implements a model using
   # TensorFlow's Estimators API.
   train = Trainer(
-      custom_executor_spec=executor_spec.ExecutorClassSpec(
-          ai_platform_trainer_executor.Executor),
+#      custom_executor_spec=executor_spec.ExecutorClassSpec(
+#          ai_platform_trainer_executor.Executor),
+      custom_executor_spec=executor_spec.ExecutorClassSpec(trainer_executor.GenericExecutor),
       module_file=TRAIN_MODULE_FILE,
       transformed_examples=transform.outputs.transformed_examples,
       schema=import_schema.outputs.result,
       transform_graph=transform.outputs.transform_graph,
       train_args={'num_steps': train_steps},
       eval_args={'num_steps': eval_steps},
-      custom_config={'ai_platform_training_args': ai_platform_training_args})
+#      custom_config={'ai_platform_training_args': ai_platform_training_args})
 
   # Get the latest blessed model for model validation.
   resolve = ResolverNode(
@@ -117,10 +119,35 @@ def create_pipeline(pipeline_name: Text,
       model=Channel(type=Model),
       model_blessing=Channel(type=ModelBlessing))
 
-  # Uses TFMA to compute a evaluation statistics over features of a model.
+ # Uses TFMA to compute a evaluation statistics over features of a model.
+  eval_config = tfma.EvalConfig(
+      model_specs=[
+          tfma.ModelSpec(label_key=features.LABEL_KEY)
+      ],
+      metrics_specs=[
+          tfma.MetricsSpec(
+              thresholds = {
+                  'sparse_categorical_crossentropy': tfma.MetricThreshold(
+                      value_threshold=tfma.GenericValueThreshold(
+                          lower_bound={'value': 0.7}),
+                      change_threshold=tfma.GenericChangeThreshold(
+                          direction=tfma.MetricDirection.HIGHER_IS_BETTER,
+                          absolute={'value': -1e-10}))
+              }
+          )
+      ],
+      slicing_specs=[
+          tfma.SlicingSpec()
+      ]
+  )
+
   analyze = Evaluator(
       examples=generate_examples.outputs.examples,
-      model=train.outputs.model)
+      model=train.outputs.model,
+      baseline_model=resolve.outputs.model,
+      eval_config=eval_config
+  )
+  
   
   # Checks whether the model passed the validation steps and pushes the model
   # to a file destination if check passed.

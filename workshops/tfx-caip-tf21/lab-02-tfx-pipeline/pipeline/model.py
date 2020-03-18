@@ -160,7 +160,6 @@ def run_fn(fn_args):
 
   tf_transform_output = tft.TFTransformOutput(fn_args.transform_output)
     
-    
   train_dataset = _input_fn(fn_args.train_files, tf_transform_output, TRAIN_BATCH_SIZE)
   eval_dataset = _input_fn(fn_args.eval_files, tf_transform_output, EVAL_BATCH_SIZE)
     
