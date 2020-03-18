@@ -15,8 +15,9 @@
 
 import os
 import kfp
-from typing import Optional, Dict, List, Text
+import tensorflow_model_analysis as tfma
 
+from typing import Optional, Dict, List, Text
 
 from tfx.components.base import executor_spec
 from tfx.components import Evaluator
@@ -47,6 +48,7 @@ from tfx.types.standard_artifacts import ModelBlessing
 from tfx.types.standard_artifacts import Schema
 
 from ml_metadata.proto import metadata_store_pb2
+from tfx.components.trainer import executor as trainer_executor
 
 import features
 
@@ -107,12 +109,14 @@ def create_pipeline(pipeline_name: Text,
   train = Trainer(
 #      custom_executor_spec=executor_spec.ExecutorClassSpec(
 #          ai_platform_trainer_executor.Executor),
+      custom_executor_spec=executor_spec.ExecutorClassSpec(trainer_executor.GenericExecutor),
       module_file=TRAIN_MODULE_FILE,
       transformed_examples=transform.outputs.transformed_examples,
       schema=import_schema.outputs.result,
       transform_graph=transform.outputs.transform_graph,
       train_args={'num_steps': train_steps},
-      eval_args={'num_steps': eval_steps})
+      eval_args={'num_steps': eval_steps},
+      custom_config={'test': 'test', 'test1': 'test1'})
 #      custom_config={'ai_platform_training_args': ai_platform_training_args})
 
   # Get the latest blessed model for model validation.
@@ -123,9 +127,33 @@ def create_pipeline(pipeline_name: Text,
       model_blessing=Channel(type=ModelBlessing))
 
   # Uses TFMA to compute a evaluation statistics over features of a model.
+  eval_config = tfma.EvalConfig(
+      model_specs=[
+          tfma.ModelSpec(label_key=features.LABEL_KEY)
+      ],
+      metrics_specs=[
+          tfma.MetricsSpec(
+              thresholds = {
+                  'sparse_categorical_crossentropy': tfma.MetricThreshold(
+                      value_threshold=tfma.GenericValueThreshold(
+                          lower_bound={'value': 0.7}),
+                      change_threshold=tfma.GenericChangeThreshold(
+                          direction=tfma.MetricDirection.HIGHER_IS_BETTER,
+                          absolute={'value': -1e-10}))
+              }
+          )
+      ],
+      slicing_specs=[
+          tfma.SlicingSpec()
+      ]
+  )
+
   analyze = Evaluator(
       examples=generate_examples.outputs.examples,
-      model=train.outputs.model)
+      model=train.outputs.model,
+      baseline_model=resolve.outputs.model,
+      eval_config=eval_config
+  )
   
   # Checks whether the model passed the validation steps and pushes the model
   # to a file destination if check passed.
@@ -135,7 +163,8 @@ def create_pipeline(pipeline_name: Text,
       push_destination=pusher_pb2.PushDestination(
           filesystem=pusher_pb2.PushDestination.Filesystem(
               base_directory=os.path.join(
-                  str(pipeline.ROOT_PARAMETER), 'model_serving'))))
+                  #str(pipeline.ROOT_PARAMETER), 'model_serving'))))
+                 '/tmp', 'model_serving'))))
   #deploy = Pusher(
   #    custom_executor_spec=executor_spec.ExecutorClassSpec(
   #        ai_platform_pusher_executor.Executor),

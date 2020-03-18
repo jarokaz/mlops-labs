@@ -13,6 +13,8 @@
 # limitations under the License.
 """The Covertype classifier DNN keras model."""
 
+import absl
+
 import tensorflow as tf
 import tensorflow_model_analysis as tfma
 import tensorflow_transform as tft
@@ -20,174 +22,173 @@ from tensorflow_transform.tf_metadata import schema_utils
 
 import features
 
-EXPORTED_MODEL_NAME = 'covertype-classifier'
-
-def _get_raw_feature_spec(schema):
-  return schema_utils.schema_as_feature_spec(schema).feature_spec
+HIDDEN_UNITS = [16, 8]
+LEARNING_RATE = 0.001
+TRAIN_BATCH_SIZE=64
+EVAL_BATCH_SIZE=64
 
 
 def _gzip_reader_fn(filenames):
   """Small utility returning a record reader that can read gzip'ed files."""
-
   return tf.data.TFRecordDataset(filenames, compression_type='GZIP')
 
 
-def _build_estimator(config,
-                     numeric_feature_keys,
-                     categorical_feature_keys,
-                     hidden_units,
-                     warm_start_from=None):
-  """Build an estimator for predicting forest cover based on cartographic data."""
+def _get_serve_tf_examples_fn(model, tf_transform_output):
+  """Returns a function that parses a serialized tf.Example and applies TFT."""
 
-  num_feature_columns = [
-      tf.feature_column.numeric_column(key) for key in numeric_feature_keys
-  ]
-  categorical_feature_columns = [
-      tf.feature_column.categorical_column_with_identity(
-          key, num_buckets=num_buckets, default_value=0)
-      for key, num_buckets in categorical_feature_keys
-  ]
+  model.tft_layer = tf_transform_output.transform_features_layer()
 
-  return tf.estimator.DNNLinearCombinedClassifier(
-      config=config,
-      n_classes=features.NUM_CLASSES,
-      linear_feature_columns=categorical_feature_columns,
-      dnn_feature_columns=num_feature_columns,
-      dnn_hidden_units=hidden_units or [100, 70, 50, 25],
-      warm_start_from=warm_start_from)
+  @tf.function
+  def serve_tf_examples_fn(serialized_tf_examples):
+    """Returns the output to be used in the serving signature."""
+    feature_spec = tf_transform_output.raw_feature_spec()
+    feature_spec.pop(features.LABEL_KEY)
+    parsed_features = tf.io.parse_example(serialized_tf_examples, feature_spec)
+
+    transformed_features = model.tft_layer(parsed_features)
+    transformed_features.pop(features.transformed_name(features.LABEL_KEY))
+
+    return model(transformed_features)
+
+  return serve_tf_examples_fn
 
 
-def _input_fn(filenames, feature_specs, label_key, batch_size=200):
-  """Generates features and labels for training or evaluation."""
-
-  dataset = tf.data.experimental.make_batched_features_dataset(
-      file_pattern=filenames,
-      batch_size=batch_size,
-      features=feature_specs,
-      label_key=label_key,
-      reader=_gzip_reader_fn)
-
-  return dataset
-
-
-def _example_serving_receiver_fn(tf_transform_output, schema, label_key):
-  """Build the serving graph."""
-
-  raw_feature_spec = _get_raw_feature_spec(schema)
-  raw_feature_spec.pop(label_key)
-
-  raw_input_fn = tf.estimator.export.build_parsing_serving_input_receiver_fn(
-      raw_feature_spec, default_batch_size=None)
-  serving_input_receiver = raw_input_fn()
-
-  transformed_features = tf_transform_output.transform_raw_features(
-      serving_input_receiver.features)
-
-  return tf.estimator.export.ServingInputReceiver(
-      transformed_features, serving_input_receiver.receiver_tensors)
-
-
-def _eval_input_receiver_fn(tf_transform_output, schema, label_key):
-  """Build everything needed for the tf-model-analysis to run the model."""
-
-  # Notice that the inputs are raw features, not transformed features here.
-  raw_feature_spec = _get_raw_feature_spec(schema)
-
-  raw_input_fn = tf.estimator.export.build_parsing_serving_input_receiver_fn(
-      raw_feature_spec, default_batch_size=None)
-  serving_input_receiver = raw_input_fn()
-
-  features = serving_input_receiver.features.copy()
-  transformed_features = tf_transform_output.transform_raw_features(features)
-
-  # NOTE: Model is driven by transformed features (since training works on the
-  # materialized output of TFT, but slicing will happen on raw features.
-  features.update(transformed_features)
-
-  return tfma.export.EvalInputReceiver(
-      features=features,
-      receiver_tensors=serving_input_receiver.receiver_tensors,
-      labels=transformed_features[label_key])
-
-### Training function for the Train component
-def trainer_fn(hparams, schema):
-  """Trains CoverType classifier."""
-
-  train_batch_size = 40
-  eval_batch_size = 40
-  hidden_units = [128, 64]
-
-  # Retrieve transformed feature specs
-  tf_transform_output = tft.TFTransformOutput(hparams.transform_output)
+def _input_fn(file_pattern, tf_transform_output, batch_size=200):
+  """Generates features and label for tuning/training.
+  Args:
+    file_pattern: input tfrecord file pattern.
+    tf_transform_output: A TFTransformOutput.
+    batch_size: representing the number of consecutive elements of returned
+      dataset to combine in a single batch
+  Returns:
+    A dataset that contains (features, indices) tuple where features is a
+      dictionary of Tensors, and indices is a single Tensor of label indices.
+  """
   transformed_feature_spec = (
       tf_transform_output.transformed_feature_spec().copy())
 
-  print(transformed_feature_spec)
-  print(type(transformed_feature_spec))
+  dataset = tf.data.experimental.make_batched_features_dataset(
+      file_pattern=file_pattern,
+      batch_size=batch_size,
+      features=transformed_feature_spec,
+      reader=_gzip_reader_fn,
+      label_key=features.transformed_name(features.LABEL_KEY))
 
-  # Prepare transformed feature name lists
-  # For categorical features retrieve vocabulary sizes
-  transformed_label_key = features.transformed_name(features.LABEL_KEY)
-  transformed_numeric_feature_keys = [
-      features.transformed_name(key) for key in features.NUMERIC_FEATURE_KEYS
+  return dataset
+
+def _build_keras_model(tf_transform_output, hidden_units, learning_rate):
+  """Creates a DNN Keras model for classifying taxi data.
+  Args:
+    hidden_units: [int], the layer sizes of the DNN (input layer first).
+  Returns:
+    A keras Model.
+  """
+
+  numeric_columns = [
+      tf.feature_column.numeric_column(
+          key=features.transformed_name(key), 
+          shape=())
+      for key in features.NUMERIC_FEATURE_KEYS
   ]
-  transformed_categorical_feature_keys = [
-      (features.transformed_name(key),
-       tf_transform_output.num_buckets_for_transformed_feature(
-           features.transformed_name(key))) for key in features.CATEGORICAL_FEATURE_KEYS
+
+  categorical_columns = [
+      tf.feature_column.categorical_column_with_identity(
+          key=features.transformed_name(key), 
+          num_buckets=tf_transform_output.num_buckets_for_transformed_feature(features.transformed_name(key)), 
+          default_value=0)
+      for key in features.CATEGORICAL_FEATURE_KEYS
   ]
 
-  # Create a training input function
-  train_input_fn = lambda: _input_fn(
-      filenames=hparams.train_files,
-      feature_specs=tf_transform_output.transformed_feature_spec().copy(),
-      batch_size=train_batch_size,
-      label_key=transformed_label_key)
+  indicator_columns = [
+      tf.feature_column.indicator_column(categorical_column)
+      for categorical_column in categorical_columns
+  ]
 
-  # Create an evaluation input function
-  eval_input_fn = lambda: _input_fn(
-      filenames=hparams.eval_files,
-      feature_specs=tf_transform_output.transformed_feature_spec().copy(),
-      batch_size=eval_batch_size,
-      label_key=transformed_label_key)
+  model = _wide_and_deep_classifier(
+      # TODO(b/139668410) replace with premade wide_and_deep keras model
+      wide_columns=indicator_columns,
+      deep_columns=numeric_columns,
+      dnn_hidden_units=hidden_units,
+      learning_rate=learning_rate)
+  return model
 
-  # Create a training specification
-  train_spec = tf.estimator.TrainSpec(
-      train_input_fn, max_steps=hparams.train_steps)
 
-  # Create an evaluation specifaction
-  serving_receiver_fn = lambda: _example_serving_receiver_fn(
-      tf_transform_output, schema, features.LABEL_KEY)
-  exporter = tf.estimator.FinalExporter(EXPORTED_MODEL_NAME,
-                                        serving_receiver_fn)
-
-  eval_spec = tf.estimator.EvalSpec(
-      eval_input_fn,
-      steps=hparams.eval_steps,
-      exporters=[exporter],
-      name=EXPORTED_MODEL_NAME)
-
-  # Create runtime config
-  run_config = tf.estimator.RunConfig(
-      save_checkpoints_steps=999, keep_checkpoint_max=1)
-
-  run_config = run_config.replace(model_dir=hparams.serving_model_dir)
-
-  # Build an estimator
-  estimator = _build_estimator(
-      hidden_units=hidden_units,
-      numeric_feature_keys=transformed_numeric_feature_keys,
-      categorical_feature_keys=transformed_categorical_feature_keys,
-      config=run_config,
-      warm_start_from=hparams.base_model)
-
-  # Create an input receiver for TFMA processing
-  receiver_fn = lambda: _eval_input_receiver_fn(tf_transform_output, schema,
-                                                transformed_label_key)
-
-  return {
-      'estimator': estimator,
-      'train_spec': train_spec,
-      'eval_spec': eval_spec,
-      'eval_input_receiver_fn': receiver_fn
+def _wide_and_deep_classifier(wide_columns, deep_columns, dnn_hidden_units, learning_rate):
+  """Build a simple keras wide and deep model.
+  Args:
+    wide_columns: Feature columns wrapped in indicator_column for wide (linear)
+      part of the model.
+    deep_columns: Feature columns for deep part of the model.
+    dnn_hidden_units: [int], the layer sizes of the hidden DNN.
+  Returns:
+    A Wide and Deep Keras model
+  """
+  
+  input_layers = {
+      column.key: tf.keras.layers.Input(name=column.key, shape=(), dtype=tf.float32)
+      for column in deep_columns
   }
+  
+  input_layers.update({
+      column.categorical_column.key: tf.keras.layers.Input(name=column.categorical_column.key, shape=(), dtype=tf.int32)
+      for column in wide_columns
+  })
+    
+  deep = tf.keras.layers.DenseFeatures(deep_columns)(input_layers)
+  for numnodes in dnn_hidden_units:
+    deep = tf.keras.layers.Dense(numnodes)(deep)
+  wide = tf.keras.layers.DenseFeatures(wide_columns)(input_layers)
+
+  output = tf.keras.layers.Dense(features.NUM_CLASSES, activation='softmax')(
+               tf.keras.layers.concatenate([deep, wide]))
+
+  model = tf.keras.Model(input_layers, output)
+  model.compile(
+      loss='sparse_categorical_crossentropy',
+      optimizer=tf.keras.optimizers.Adam(lr=learning_rate),
+      metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
+  model.summary(print_fn=absl.logging.info)
+  return model
+
+
+# TFX Trainer will call this function.
+def run_fn(fn_args):
+  """Train the model based on given args.
+  Args:
+    fn_args: Holds args used to train the model as name/value pairs.
+  """
+
+  tf_transform_output = tft.TFTransformOutput(fn_args.transform_output)
+    
+    
+  train_dataset = _input_fn(fn_args.train_files, tf_transform_output, TRAIN_BATCH_SIZE)
+  eval_dataset = _input_fn(fn_args.eval_files, tf_transform_output, EVAL_BATCH_SIZE)
+    
+  model = _build_keras_model(
+      tf_transform_output=tf_transform_output,
+      hidden_units=HIDDEN_UNITS,
+      learning_rate=LEARNING_RATE
+  )
+
+  model.fit(
+      train_dataset,
+      epochs=2,
+      steps_per_epoch=fn_args.train_steps,
+      validation_data=eval_dataset,
+      validation_steps=fn_args.eval_steps)
+    
+  signatures = {
+      'serving_default':
+          _get_serve_tf_examples_fn(model,
+                                    tf_transform_output).get_concrete_function(
+                                        tf.TensorSpec(
+                                            shape=[None],
+                                            dtype=tf.string,
+                                            name='examples')),
+  }
+  
+  model.save(fn_args.serving_model_dir, save_format='tf', signatures=signatures)
+    
+
+  
+  

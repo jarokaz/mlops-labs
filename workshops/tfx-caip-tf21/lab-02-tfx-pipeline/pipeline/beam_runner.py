@@ -46,7 +46,7 @@ def run():
           pipeline_name=PIPELINE_NAME,
           pipeline_root=PIPELINE_ROOT,
           data_root_uri=DATA_PATH,
-          train_steps=500,
+          train_steps=5000,
           eval_steps=500,
           ai_platform_training_args=None,
           ai_platform_serving_args=None,
