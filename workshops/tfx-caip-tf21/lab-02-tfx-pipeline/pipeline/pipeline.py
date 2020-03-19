@@ -101,22 +101,19 @@ def create_pipeline(pipeline_name: Text,
       schema=import_schema.outputs.result,
       module_file=TRANSFORM_MODULE_FILE)
 
-  # Uses user-provided Python function that implements a model using
-  # TensorFlow's Estimators API.
-  # Uses user-provided Python function that implements a model using
-  # TensorFlow's Estimators API.
+  
+  # Trains the model using a user provided trainer function.
   train = Trainer(
-#      custom_executor_spec=executor_spec.ExecutorClassSpec(
-#          ai_platform_trainer_executor.Executor),
-      custom_executor_spec=executor_spec.ExecutorClassSpec(trainer_executor.GenericExecutor),
+      custom_executor_spec=executor_spec.ExecutorClassSpec(
+          ai_platform_trainer_executor.GenericExecutor),
+#      custom_executor_spec=executor_spec.ExecutorClassSpec(trainer_executor.GenericExecutor),
       module_file=TRAIN_MODULE_FILE,
       transformed_examples=transform.outputs.transformed_examples,
       schema=import_schema.outputs.result,
       transform_graph=transform.outputs.transform_graph,
       train_args={'num_steps': train_steps},
       eval_args={'num_steps': eval_steps},
-      custom_config={'test': 'test', 'test1': 'test1'})
-#      custom_config={'ai_platform_training_args': ai_platform_training_args})
+      custom_config={'ai_platform_training_args': ai_platform_training_args})
 
   # Get the latest blessed model for model validation.
   resolve = ResolverNode(

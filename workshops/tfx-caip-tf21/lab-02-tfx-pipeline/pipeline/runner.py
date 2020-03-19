@@ -53,8 +53,6 @@ if __name__ == '__main__':
       '--region=' + Config.GCP_REGION,
   ]
     
-  ### REMOVE REMOVE REMOVE
-  #beam_pipeline_args=['--direct_num_workers=0'],
   
   # Set the default values for the pipeline runtime parameters
     
@@ -98,8 +96,8 @@ if __name__ == '__main__':
         eval_steps=eval_steps,
         ai_platform_training_args=ai_platform_training_args,
         ai_platform_serving_args=ai_platform_serving_args,
- #       beam_pipeline_args=beam_pipeline_args))
-        beam_pipeline_args=None))
+        beam_pipeline_args=beam_pipeline_args))
+     
         
 
 
