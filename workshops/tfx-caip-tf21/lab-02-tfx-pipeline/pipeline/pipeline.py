@@ -15,8 +15,9 @@
 
 import os
 import kfp
-from typing import Optional, Dict, List, Text
+import tensorflow_model_analysis as tfma
 
+from typing import Optional, Dict, List, Text
 
 from tfx.components.base import executor_spec
 from tfx.components import Evaluator
@@ -46,6 +47,8 @@ from tfx.types import Channel
 from tfx.types.standard_artifacts import Model
 from tfx.types.standard_artifacts import ModelBlessing
 from tfx.types.standard_artifacts import Schema
+
+import features
 
 
 SCHEMA_FOLDER='../schema'
@@ -100,6 +103,8 @@ def create_pipeline(pipeline_name: Text,
 
   # Uses user-provided Python function that implements a model using
   # TensorFlow's Estimators API.
+  # Uses user-provided Python function that implements a model using
+  # TensorFlow's Estimators API.
   train = Trainer(
 #      custom_executor_spec=executor_spec.ExecutorClassSpec(
 #          ai_platform_trainer_executor.Executor),
@@ -110,6 +115,7 @@ def create_pipeline(pipeline_name: Text,
       transform_graph=transform.outputs.transform_graph,
       train_args={'num_steps': train_steps},
       eval_args={'num_steps': eval_steps},
+      custom_config={'test': 'test', 'test1': 'test1'})
 #      custom_config={'ai_platform_training_args': ai_platform_training_args})
 
   # Get the latest blessed model for model validation.
@@ -119,7 +125,7 @@ def create_pipeline(pipeline_name: Text,
       model=Channel(type=Model),
       model_blessing=Channel(type=ModelBlessing))
 
- # Uses TFMA to compute a evaluation statistics over features of a model.
+  # Uses TFMA to compute a evaluation statistics over features of a model.
   eval_config = tfma.EvalConfig(
       model_specs=[
           tfma.ModelSpec(label_key=features.LABEL_KEY)
@@ -148,7 +154,6 @@ def create_pipeline(pipeline_name: Text,
       eval_config=eval_config
   )
   
-  
   # Checks whether the model passed the validation steps and pushes the model
   # to a file destination if check passed.
   deploy = Pusher(
@@ -158,6 +163,7 @@ def create_pipeline(pipeline_name: Text,
           filesystem=pusher_pb2.PushDestination.Filesystem(
               base_directory=os.path.join(
                   str(pipeline.ROOT_PARAMETER), 'model_serving'))))
+               
   #deploy = Pusher(
   #    custom_executor_spec=executor_spec.ExecutorClassSpec(
   #        ai_platform_pusher_executor.Executor),

@@ -52,6 +52,9 @@ if __name__ == '__main__':
       '--temp_location=' + beam_tmp_folder,
       '--region=' + Config.GCP_REGION,
   ]
+    
+  ### REMOVE REMOVE REMOVE
+  #beam_pipeline_args=['--direct_num_workers=0'],
   
   # Set the default values for the pipeline runtime parameters
     
@@ -97,6 +100,7 @@ if __name__ == '__main__':
         ai_platform_serving_args=ai_platform_serving_args,
  #       beam_pipeline_args=beam_pipeline_args))
         beam_pipeline_args=None))
+        
 
 
 
