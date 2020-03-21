@@ -48,7 +48,8 @@ def _get_serve_tf_examples_fn(model, tf_transform_output):
     transformed_features = model.tft_layer(parsed_features)
     transformed_features.pop(features.transformed_name(features.LABEL_KEY))
 
-    return model(transformed_features)
+    outputs = model(transformed_features)
+    return {'outputs': outputs}
 
   return serve_tf_examples_fn
 
@@ -70,7 +71,6 @@ def _input_fn(file_pattern, tf_transform_output, batch_size=200):
   dataset = tf.data.experimental.make_batched_features_dataset(
       file_pattern=file_pattern,
       batch_size=batch_size,
-      num_epochs=1,
       features=transformed_feature_spec,
       reader=_gzip_reader_fn,
       label_key=features.transformed_name(features.LABEL_KEY))
@@ -147,7 +147,7 @@ def _wide_and_deep_classifier(wide_columns, deep_columns, dnn_hidden_units, lear
   model.compile(
       loss='sparse_categorical_crossentropy',
       optimizer=tf.keras.optimizers.Adam(lr=learning_rate),
-      metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
+      metrics=['sparse_categorical_accuracy'])
   model.summary(print_fn=absl.logging.info)
   return model
 
@@ -170,13 +170,7 @@ def run_fn(fn_args):
       learning_rate=LEARNING_RATE
   )
 
-  # In TFX 0.21.2 only two user parameters - train_steps and eval_steps 
-  # can be passed from the Trainer component to the run_fun function.
-  # As an interim measure we use train_steps to pass the number of epochs
-  # where an epoch is a full pass through the dataset. We don't use eval_steps
-  # The model will be evaluatate on a full validation set
-  epochs = fn_args.train_steps
-
+  
   callbacks = [
       # Write TensorBoard logs to `./logs` directory
       tf.keras.callbacks.TensorBoard(log_dir=fn_args.serving_model_dir)
@@ -184,10 +178,9 @@ def run_fn(fn_args):
 
   model.fit(
       train_dataset,
-      epochs=epochs,
-      steps_per_epoch=None,
+      steps_per_epoch=fn_args.train_steps,
       validation_data=eval_dataset,
-      validation_steps=None,
+      validation_steps=fn_args.eval_steps,
       callbacks=callbacks)
     
   signatures = {
