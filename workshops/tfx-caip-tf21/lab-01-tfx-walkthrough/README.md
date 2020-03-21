@@ -1,6 +1,6 @@
 # TFX Components walk-through
 
-In this lab, you will walk through  configuration and execution of the key TFX components. The primary goal of the lab is to get a high level understanding of the function and usage of each of the components. You will work in a Jupyter notebook using the omponents in an interactive mode.
+In this lab, you will walk through  the configuration and execution of the key TFX components. The primary goal of the lab is to get a high level understanding of the function and usage of each of the components. You will work in a Jupyter notebook using the omponents in an interactive mode.
 
 
 ## Lab instructions
