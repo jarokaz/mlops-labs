@@ -8,4 +8,5 @@ In this lab you will walk through the configuration and execution of core TFX Co
 Follow the instructor who will guide you through the `tfx-walkthrough.ipynb` notebook.
 
 **IMPORTANT**
+
 Currently, TFMA visualizations do not render properly in JupyterLab. It is recommended to run the lab notebook in Jupyter Classic Notebook. To switch to Classic Notebook select *Launch Classic Notebook* from the *Help* menu.
