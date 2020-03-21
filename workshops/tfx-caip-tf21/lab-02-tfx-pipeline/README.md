@@ -5,6 +5,11 @@ In this lab you will develop, deploy and run a TFX pipeline that uses Kubeflow P
 
 ## Lab instructions
 
+**IMPORTANT**
+Currently, TFMA visualizations do not render properly in JupyterLab. It is recommended to run the lab notebook in Jupyter Classic Notebook. To switch to Classic Notebook select *Launch Classic Notebook* from the *Help* menu.
+
+
+
 ### Understanding the pipeline design.
 
 The pipeline implements a typical TFX workflow as depicted on the below diagram:
