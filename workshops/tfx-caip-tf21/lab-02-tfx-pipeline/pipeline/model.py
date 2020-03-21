@@ -177,12 +177,18 @@ def run_fn(fn_args):
   # The model will be evaluatate on a full validation set
   epochs = fn_args.train_steps
 
+  callbacks = [
+      # Write TensorBoard logs to `./logs` directory
+      tf.keras.callbacks.TensorBoard(log_dir=fn_args.serving_model_dir)
+  ]
+
   model.fit(
       train_dataset,
       epochs=epochs,
       steps_per_epoch=None,
       validation_data=eval_dataset,
-      validation_steps=None)
+      validation_steps=None,
+      callbacks=callbacks)
     
   signatures = {
       'serving_default':
