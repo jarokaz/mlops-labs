@@ -70,6 +70,7 @@ def _input_fn(file_pattern, tf_transform_output, batch_size=200):
   dataset = tf.data.experimental.make_batched_features_dataset(
       file_pattern=file_pattern,
       batch_size=batch_size,
+      num_epochs=1,
       features=transformed_feature_spec,
       reader=_gzip_reader_fn,
       label_key=features.transformed_name(features.LABEL_KEY))
@@ -169,12 +170,19 @@ def run_fn(fn_args):
       learning_rate=LEARNING_RATE
   )
 
+  # In TFX 0.21.2 only two user parameters - train_steps and eval_steps 
+  # can be passed from the Trainer component to the run_fun function.
+  # As an interim measure we use train_steps to pass the number of epochs
+  # where an epoch is a full pass through the dataset. We don't use eval_steps
+  # The model will be evaluatate on a full validation set
+  epochs = fn_args.train_steps
+
   model.fit(
       train_dataset,
-      epochs=2,
-      steps_per_epoch=fn_args.train_steps,
+      epochs=epochs,
+      steps_per_epoch=None,
       validation_data=eval_dataset,
-      validation_steps=fn_args.eval_steps)
+      validation_steps=None)
     
   signatures = {
       'serving_default':
