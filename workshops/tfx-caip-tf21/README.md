@@ -91,6 +91,6 @@ In this lab, you will step through the configuration and execution of core TFX c
 ### Lab-02 - Orchestrating model training and deployment with TFX and Cloud AI Platform
 In this lab you will develop, deploy and run a TFX pipeline that uses  Cloud Dataflow and Cloud AI Platform as execution runtimes.
 
-### Lab-03 - CI/CD for a KFP pipeline
+### Lab-03 - CI/CD for a TFX pipeline
 In this lab you will author a **Cloud Build** CI/CD workflow that automatically builds and deploys a TFX pipeline. You will also integrate your workflow with **GitHub**.
 
