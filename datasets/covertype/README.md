@@ -84,13 +84,13 @@ Cache | Cache la Poudre Wilderness Area
 
 Code | Description
 -----|------------
-1 | Spruce/Fir
-2 | Lodgepole Pine
-3 | Ponderosa Pine
-4 | Cottonwood/Willow
-5 | Aspen
-6 | Douglas-fir
-7 | Krummholz
+0 | Spruce/Fir
+1 | Lodgepole Pine
+2 | Ponderosa Pine
+3 | Cottonwood/Willow
+4 | Aspen
+5 | Douglas-fir
+6 | Krummholz
 
 ## Data Splits
 
