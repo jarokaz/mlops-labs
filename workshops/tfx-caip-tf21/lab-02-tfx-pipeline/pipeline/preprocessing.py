@@ -53,7 +53,7 @@ def preprocessing_fn(inputs):
 
   # Convert Cover_Type from 1-7 to 0-6
   outputs[features.transformed_name(features.LABEL_KEY)] = _fill_in_missing(
-      inputs[features.LABEL_KEY]) - 1
+      inputs[features.LABEL_KEY])
 
   return outputs
 

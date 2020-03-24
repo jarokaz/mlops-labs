@@ -33,6 +33,27 @@ def _gzip_reader_fn(filenames):
   return tf.data.TFRecordDataset(filenames, compression_type='GZIP')
 
 
+#def _get_serve_tf_examples_fn(model, tf_transform_output):
+#  """Returns a function that parses a serialized tf.Example and applies TFT."""
+
+#  model.tft_layer = tf_transform_output.transform_features_layer()
+
+ # @tf.function
+ # def serve_tf_examples_fn(serialized_tf_examples):
+ #   """Returns the output to be used in the serving signature."""
+ #   feature_spec = tf_transform_output.raw_feature_spec()
+ #   feature_spec.pop(features.LABEL_KEY)
+ #   parsed_features = tf.io.parse_example(serialized_tf_examples, feature_spec)
+
+ #   transformed_features = model.tft_layer(parsed_features)
+ #   transformed_features.pop(features.transformed_name(features.LABEL_KEY))
+
+ #   outputs = model(transformed_features)
+ #   return {'outputs': outputs}
+
+ # return serve_tf_examples_fn
+
+
 def _get_serve_tf_examples_fn(model, tf_transform_output):
   """Returns a function that parses a serialized tf.Example and applies TFT."""
 
@@ -48,8 +69,7 @@ def _get_serve_tf_examples_fn(model, tf_transform_output):
     transformed_features = model.tft_layer(parsed_features)
     transformed_features.pop(features.transformed_name(features.LABEL_KEY))
 
-    outputs = model(transformed_features)
-    return {'outputs': outputs}
+    return model(transformed_features)
 
   return serve_tf_examples_fn
 
@@ -147,7 +167,7 @@ def _wide_and_deep_classifier(wide_columns, deep_columns, dnn_hidden_units, lear
   model.compile(
       loss='sparse_categorical_crossentropy',
       optimizer=tf.keras.optimizers.Adam(lr=learning_rate),
-      metrics=['sparse_categorical_accuracy'])
+      metrics=[tf.keras.metrics.SparseCategoricalAccuracy(name='accuracy')])
   model.summary(print_fn=absl.logging.info)
   return model
 
@@ -172,7 +192,7 @@ def run_fn(fn_args):
 
   
   callbacks = [
-      # Write TensorBoard logs to `./logs` directory
+      # Write TensorBoard logs 
       tf.keras.callbacks.TensorBoard(log_dir=fn_args.serving_model_dir)
   ]
 
