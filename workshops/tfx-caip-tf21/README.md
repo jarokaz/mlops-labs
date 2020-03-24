@@ -8,7 +8,7 @@ The below diagram represents the workflow orchestrated by the pipeline.
 
 1. Training data in the CSV format is ingested from a GCS location using *CsvExampleGen*. The URI to the data root is passed as a runtime parameter. The `CsvExampleGen` component splits the source data into training and evaluation splits and converts the data into the TFRecords format.
 2. The *StatisticsGen* component generates statistics for both splits.
-3. The *SchemaGen* component autogenerates a schema . This is done for tracking. The schema imported by the *ImporterNode* will be used by downstream components. 
+3. The *SchemaGen* component autogenerates a schema . This is done for tracking. The pipeline uses a curated schema imported by the *ImportedNode* component.
 4. The *ImporterNode* component is used to bring a curated schema file. The location of the schema file is passed as a runtime parameter. 
 5. The *ExampleValidator* component validates the generated examples against the imported schema
 6. The *Transform* component preprocess the data to the format required by the *Trainer* compoment. It also saves the preprocessing TensorFlow graph. 
