@@ -14,6 +14,7 @@
 """The Covertype classifier DNN keras model."""
 
 import absl
+import os
 
 import tensorflow as tf
 import tensorflow_model_analysis as tfma
@@ -167,7 +168,7 @@ def _wide_and_deep_classifier(wide_columns, deep_columns, dnn_hidden_units, lear
   model.compile(
       loss='sparse_categorical_crossentropy',
       optimizer=tf.keras.optimizers.Adam(lr=learning_rate),
-      metrics=[tf.keras.metrics.SparseCategoricalAccuracy(name='accuracy')])
+      metrics=[tf.keras.metrics.SparseCategoricalAccuracy()])
   model.summary(print_fn=absl.logging.info)
   return model
 
@@ -190,10 +191,11 @@ def run_fn(fn_args):
       learning_rate=LEARNING_RATE
   )
 
-  
-  callbacks = [
-      # Write TensorBoard logs 
-      tf.keras.callbacks.TensorBoard(log_dir=fn_args.serving_model_dir)
+  log_dir = os.path.join(os.path.dirname(fn_args.serving_model_dir), 'logs')
+  tensorboard_callback = tf.keras.callbacks.TensorBoard(
+      log_dir=log_dir, update_freq='batch')
+  callbacks = [ 
+      tensorboard_callback
   ]
 
   model.fit(
