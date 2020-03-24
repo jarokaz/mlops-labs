@@ -86,9 +86,9 @@ cd mlops-labs/workshops/tfx-caip-tf21
 ## Summary of lab exercises
 
 ### Lab-01 - TFX Components walk-through
-In this lab you will step through the configuration and execution of core TFX Components using the TFX interactive context. The primary goal of the lab is to get a high level understanding of a function and usage of each of the components. 
+In this lab, you will step through the configuration and execution of core TFX components using TFX interactive context. The primary goal of the lab is to get a high level understanding of a function and usage of each of the components. 
 
-### Lab-02 - Orchestrating model training and deployment with Kubeflow Pipelines and Cloud AI Platform
+### Lab-02 - Orchestrating model training and deployment with TFX and Cloud AI Platform
 In this lab you will develop, deploy and run a TFX pipeline that uses  Cloud Dataflow and Cloud AI Platform as execution runtimes.
 
 ### Lab-03 - CI/CD for a KFP pipeline
