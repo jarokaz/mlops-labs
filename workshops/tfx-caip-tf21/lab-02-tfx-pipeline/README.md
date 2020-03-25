@@ -5,3 +5,4 @@ In this lab you will develop, deploy and run a TFX pipeline that uses Kubeflow P
 
 ## Lab instructions
 
+The lab instructions are in the `tfx-covertype.ipynb` notebook.
