@@ -56,7 +56,6 @@ ml.googleapis.com \
 dataflow.googleapis.com 
 ```
 
-### Assing the Cloud Build service account to the project Editor role
 The **Cloud Build** service account needs the Editor permissions in your GCP project to upload the pipeline package to an **AI Platform Pipelines** instance.
 
 ```
