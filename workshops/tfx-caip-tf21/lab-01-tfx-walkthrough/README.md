@@ -5,7 +5,7 @@ In this lab, you will walk through  the configuration and execution of the key T
 
 ## Lab instructions
 
-Follow the instructor who will guide you through the `tfx-walkthrough.ipynb` notebook.
+The lab instructions are in the `tfx-walkthrough.ipynb` notebook.
 
 **IMPORTANT**
 
