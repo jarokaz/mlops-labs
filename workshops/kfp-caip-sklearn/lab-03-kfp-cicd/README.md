@@ -4,4 +4,4 @@ In this lab you will walk through authoring of a **Cloud Build** CI/CD workflow 
 
 ## Lab instructions
 
-Follow the instructor who will walk you through the `kfp-cicd.ipynb` notebook.
+The lab instructions are in the `kfp-cicd.ipynb` notebook.
