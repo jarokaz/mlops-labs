@@ -6,4 +6,4 @@ In this lab, you will develop, package as a docker image, and run on **AI Platfo
 
 ## Lab instructions
 
-The lab instruction are in the `covertype_experimentation.ipynb` notebook.
+The lab instruction are in the `lab-01.ipynb` notebook.
