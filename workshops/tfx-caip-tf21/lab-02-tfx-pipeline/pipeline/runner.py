@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
   train_steps = data_types.RuntimeParameter(
       name='train-steps',
-      default=500,
+      default=5000,
       ptype=int
   )
     
