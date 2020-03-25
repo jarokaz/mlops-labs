@@ -4,4 +4,4 @@ In this lab, you will build, deploy, and run a KFP pipeline that orchestrates **
 
 
 ## Lab instructions
-The lab instructions are in the `kfp-pipeline.ipynb` notebook.
+The lab instructions are in the `lab-02.ipynb` notebook.
