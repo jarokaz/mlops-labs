@@ -42,7 +42,7 @@ steps:
   - 'RUNTIME_VERSION=$_RUNTIME_VERSION'
   - 'PYTHON_VERSION=$_PYTHON_VERSION'
   - 'COMPONENT_URL_SEARCH_PREFIX=$_COMPONENT_URL_SEARCH_PREFIX'
-  dir: $_PIPELINE_FOLDER
+  dir: $_PIPELINE_FOLDER/pipeline
   
  # Upload the pipeline
 - name: 'gcr.io/$PROJECT_ID/kfp-cli'
@@ -50,7 +50,7 @@ steps:
   - '-c'
   - |
     kfp --endpoint $_ENDPOINT pipeline upload -p ${_PIPELINE_NAME}_$TAG_NAME $_PIPELINE_PACKAGE
-  dir: $_PIPELINE_FOLDER
+  dir: $_PIPELINE_FOLDER/pipeline
 
 
 # Push the images to Container Registry 
