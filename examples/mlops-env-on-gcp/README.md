@@ -1,6 +1,6 @@
 # Setting up a reference MLOps environment
 
-This folder contains the hands-on labs that guide you through the process of setting up a GCP based MLOps environment as depicted on the below diagram.
+This folder contains instructions that guide you through the process of setting up a GCP based MLOps environment as depicted on the below diagram.
 
 ![Reference topolgy](/images/mlops-env.png)
 
