@@ -17,7 +17,7 @@ The core services in the environment are:
     
 In this environment, all services are provisioned in the same [Google Cloud Project](https://cloud.google.com/storage/docs/projects). 
 
-An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench. The instance is configured using a custom container image that should be optimized for a given ML project. In the lab, you will configure the instance optimized for developing KFP and/or TFX pipelines. 
+An instance of **AI Platform Notebooks** is used as a primary experimentation/development workbench. The instance is configured using a custom container image that should be optimized for a given ML project. In this example, you will configure the instance optimized for developing Kubeflow Pipelines (KFP) and TensorFlow Extended (TFX) solutions. 
 
 The environment uses a [standalone deployment of Kubeflow Pipelines on GKE](https://www.kubeflow.org/docs/pipelines/installation/standalone-deployment/), as depicted on the below diagram:
 
