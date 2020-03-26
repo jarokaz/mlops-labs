@@ -1,4 +1,4 @@
-# Setting up a reference MLOps environment
+# Setting up an MLOps environment on GCP
 
 This folder contains instructions that guide you through the process of setting up a GCP based MLOps environment as depicted on the below diagram.
 
