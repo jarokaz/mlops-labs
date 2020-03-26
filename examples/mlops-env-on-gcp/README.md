@@ -11,7 +11,7 @@ The core services in the environment are:
 - Distributed data processing - Dataflow  
 - Analytics data warehouse - BigQuery 
 - Artifact store - Google Cloud Storage 
-- Machine learning pipelines - Kubeflow Pipelines
+- Machine learning pipelines - Kubeflow Pipelines on GKE
 - Machine learning metadata  management - ML Metadata on Cloud SQL
 - CI/CD tooling - Cloud Build
     
