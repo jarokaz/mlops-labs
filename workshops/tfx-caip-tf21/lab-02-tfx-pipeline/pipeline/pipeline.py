@@ -51,7 +51,7 @@ from tfx.types.standard_artifacts import Schema
 import features
 
 
-SCHEMA_FOLDER='schema'
+SCHEMA_FOLDER='.'
 TRANSFORM_MODULE_FILE='preprocessing.py'
 TRAIN_MODULE_FILE='model.py'
 
