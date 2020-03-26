@@ -10,7 +10,7 @@ The below diagram represents the workflow orchestrated by the pipeline.
 2. BigQuery is used to prepare training, evaluation, and testing data splits
 3. AI Platform Training is used to tune hyperparameters and train a scikit-learn model
 4. The model's performance is validated against a performance threshold
-4. If the model meets or exceeds a performance threshold it is deployed as an online service using AI Platform Prediction
+4. If the model meets or exceeds the performance threshold it is deployed as an online service using AI Platform Prediction
 
 The ML model trained by the pipeline  is a multi-class classifier that predicts the type of  forest cover from cartographic data. The model is trained on the [Covertype Data Set](/datasets/covertype/README.md) dataset.
 
