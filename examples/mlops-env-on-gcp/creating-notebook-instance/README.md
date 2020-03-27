@@ -64,7 +64,7 @@ RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/sk
 && chmod +x skaffold \
 && mv skaffold /usr/local/bin
 COPY requirements.txt .
-RUN python -m pip install -U -r requirements.txt --ignore-installed PyYAML<6
+RUN python -m pip install -U -r requirements.txt --ignore-installed PyYAML==5.3.1
 EOF
 ```
 
