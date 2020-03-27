@@ -6,13 +6,13 @@ Provisioning of the environment has been automated with the `./install.sh` scrip
 
 The script goes through the following steps:
 1. Enables required cloud services
-1. Provisions an MVP infrastructure to host a standalone deployment of Kubeflow Pipelines. This step has been automated with **Terraform**:
+1. Provisions an MVP infrastructure to host a standalone deployment of Kubeflow Pipelines. This step has been automated with [Terraform](https://www.terraform.io/):
     1. Creates a VPC 
     1. Creates and configures a GKE cluster
     1. Creates an instance of Cloud SQL
     1. Creates a GCS bucket
     1. Creates a service account for GKE worker nodes and a service account to be used by KFP pipelines
-1. Deploys Kubeflow Pipelines and configures the KFP services to use Cloud SQL for ML metadata management and GCS for artifact storage. This step has been automated with **Kustomize**.
+1. Deploys Kubeflow Pipelines and configures the KFP services to use Cloud SQL for ML metadata management and GCS for artifact storage. This step has been automated with [Kustomize](https://kustomize.io/).
 
 ## Running the installation script
 
