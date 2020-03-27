@@ -34,8 +34,9 @@ The above command installs **Kustomize** to the `/usr/local/bin` folder, which b
 To start the provisioning script:
 
 1. Open **Cloud Shell**
-2. Clone this repo under the `home` folder.
+2. Clone this repo under your `home` folder.
 ```
+cd
 git clone https://github.com/jarokaz/mlops-labs.git
 cd mlops-labs/environment-setup/lab-02-env-setup-kfp
 ```
