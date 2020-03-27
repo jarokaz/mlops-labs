@@ -48,7 +48,6 @@ cd lab-workspace
 2. Create the requirements file with the Python packages to deploy to your instance
 ```
 cat > requirements.txt << EOF
-pyyaml<6
 pandas<1.0.0
 tfx==0.21.2
 kfp==0.2.5
@@ -65,7 +64,7 @@ RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/sk
 && chmod +x skaffold \
 && mv skaffold /usr/local/bin
 COPY requirements.txt .
-RUN python -m pip install -U -r requirements.txt --ignore-installed PyYAML==3.13
+RUN python -m pip install -U -r requirements.txt --ignore-installed PyYAML<6
 EOF
 ```
 
