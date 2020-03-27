@@ -38,7 +38,7 @@ To start the provisioning script:
 ```
 cd
 git clone https://github.com/jarokaz/mlops-labs.git
-cd mlops-labs/environment-setup/lab-02-env-setup-kfp
+cd mlops-labs/examples/mlops-env-on-gcp/provisioning-kfp
 ```
 
 3. Start installation
