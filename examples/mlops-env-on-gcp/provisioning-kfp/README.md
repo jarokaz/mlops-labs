@@ -53,7 +53,7 @@ Where:
 |[SQL_PASSWORD]| Required|The password for the Cloud SQL root user|
 |[PREFIX]|Optional|A name prefix tha will be added to the names of the provisioned resources. If not provided [PROJECT_ID] will be used as the prefix|
 |[REGION]|Optional|The region for the Cloud SQL instance.  If not provided the `us-central1` region will be used|
-|[ZONE]|Optional|The zone for the GKE cluster.If not provided the `us-central1-a` will be used.|
+|[ZONE]|Optional|The zone for the GKE cluster. If not provided the `us-central1-a` will be used.|
 |[NAMESPACE]|Optional|The namespace to deploy KFP to. If not provided the `kubeflow` namespace will be used|
 
 We recommend using the defaults for the region, the zone and the namespace.
