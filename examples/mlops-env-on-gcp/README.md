@@ -34,3 +34,6 @@ In the first lab you create an instance of **AI Platform Notebooks**. In the sec
 
 ## [Provisioning a standalone deployment of Kubeflow Pipelines](provisioning-kfp/README.md)
 
+# Before you begin
+
+You need to have **Project Editor** permission in your GCP project to walk through the labs.
