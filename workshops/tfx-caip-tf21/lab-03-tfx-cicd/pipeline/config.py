@@ -28,6 +28,7 @@ class Config:
     ARTIFACT_STORE_URI=os.getenv("ARTIFACT_STORE_URI", "gs://mlops-workshop-artifact-store")
     RUNTIME_VERSION=os.getenv("RUNTIME_VERSION", "2.1")
     PYTHON_VERSION=os.getenv("PYTHON_VERSION", "3.7")
+    USE_KFP_SA=os.getenv("USE_KFP_SA", "False")
     
     
     
