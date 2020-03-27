@@ -30,7 +30,7 @@ The provisioning of the environment has been split into two hands-on labs.
 
 In the first lab you create an instance of **AI Platform Notebooks**. In the second lab you provision other services comprising the environment, including a standalone deployment of **Kubeflow Pipelines**.
 
-## [Creating an AI Platform Notebooke instance](creating-notebook-instance/README.md)
+## [Creating an AI Platform Notebook instance](creating-notebook-instance/README.md)
 
 ## [Provisioning a standalone deployment of Kubeflow Pipelines](provisioning-kfp/README.md)
 
