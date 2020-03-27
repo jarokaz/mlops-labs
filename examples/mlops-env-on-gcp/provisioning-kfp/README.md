@@ -1,6 +1,6 @@
 # Provisioning MLOps services
 
-In this lab, you will enable managed services used in MLOps evironment and provision a standalone deployment of Kubeflow Pipelines.
+In this lab, you will enable managed services used in MLOps evironment and provision a [standalone deployment of Kubeflow Pipelines](https://www.kubeflow.org/docs/pipelines/installation/standalone-deployment/).
 
 Provisioning of the environment has been automated with the `./install.sh` script. 
 
