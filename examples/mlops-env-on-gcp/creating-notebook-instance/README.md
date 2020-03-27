@@ -48,12 +48,7 @@ cd lab-workspace
 2. Create the requirements file with the Python packages to deploy to your instance
 ```
 cat > requirements.txt << EOF
-absl-py<0.9
-google-resumable-media<0.5.0dev
-httplib2<=0.12.0
-scikit-learn<0.22
 pandas<1.0.0
-cloudpickle==1.1.1
 tfx==0.21.2
 kfp==0.2.5
 EOF
