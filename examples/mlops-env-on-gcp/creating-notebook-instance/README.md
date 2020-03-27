@@ -34,7 +34,7 @@ cloudbuild.googleapis.com
 
 ## Creating an **AI Platform Notebooks** instance
 
-You will use a custom container image with KFP and TFX SDKs installed to create your instance. 
+You will use a custom container image with KFP and TFX SDKs pre-installed to create your instance. 
 
 ### Building a custom docker image:
 
