@@ -36,4 +36,4 @@ In the first lab you create an instance of **AI Platform Notebooks**. In the sec
 
 # Before you begin
 
-You need to have **Project Editor** permission in your GCP project to walk through the labs.
+You need to have **Project Editor** permissions in your GCP project to walk through the labs.
