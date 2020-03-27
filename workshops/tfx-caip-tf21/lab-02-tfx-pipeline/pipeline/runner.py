@@ -81,14 +81,11 @@ if __name__ == '__main__':
     
   # Set KubeflowDagRunner settings
   metadata_config = kubeflow_dag_runner.get_default_kubeflow_metadata_config()
-    
-  operator_funcs = []
-  if Config.USE_KFP_SA == 'True':
-        operator_funcs.append(kfp.gcp.use_gcp_secret('user-gcp-sa'))
 
   runner_config = kubeflow_dag_runner.KubeflowDagRunnerConfig(
-      kubeflow_metadata_config=metadata_config,
-      pipeline_operator_funcs=operator_funcs,
+      kubeflow_metadata_config = metadata_config,
+      pipeline_operator_funcs = kubeflow_dag_runner.get_default_pipeline_operator_funcs(
+          Config.USE_KFP_SA == 'True'),
       tfx_image=Config.TFX_IMAGE)
 
   # Compile the pipeline
