@@ -50,7 +50,6 @@ gcloud config set project $PROJECT_ID
 # Enable services
 echo INFO: Enabling required services
 
-gcloud services enable automl.googleapis.com
 gcloud services enable \
 cloudbuild.googleapis.com \
 container.googleapis.com \
