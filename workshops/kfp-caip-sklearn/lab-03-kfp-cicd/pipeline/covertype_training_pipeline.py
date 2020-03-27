@@ -33,6 +33,7 @@ TRAINER_IMAGE = os.getenv('TRAINER_IMAGE')
 RUNTIME_VERSION = os.getenv('RUNTIME_VERSION')
 PYTHON_VERSION = os.getenv('PYTHON_VERSION')
 COMPONENT_URL_SEARCH_PREFIX = os.getenv('COMPONENT_URL_SEARCH_PREFIX')
+USE_KFP_SA = os.getenv('USE_KFP_SA')
 
 TRAINING_FILE_PATH = 'datasets/training/data.csv'
 VALIDATION_FILE_PATH = 'datasets/validation/data.csv'
@@ -214,5 +215,10 @@ def covertype_train(project_id,
         runtime_version=RUNTIME_VERSION,
         python_version=PYTHON_VERSION,
         replace_existing_version=replace_existing_version)
+  
+  # Configure the pipeline to run using the service account defined
+  # in the user-gcp-sa k8s secret
+  if USE_KFP_SA == 'True':
+    kfp.dsl.get_pipeline_conf().add_op_transformer(use_gcp_secret('user-gcp-sa'))
 
 
