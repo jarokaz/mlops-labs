@@ -100,7 +100,7 @@ The workflow implemented by the pipeline is defined using a Python based KFP Dom
 
 ### Building the container images
 
-The training step in the pipeline employes the AI Platform Training component to schedule a  AI Platform Training job in a custom training container. You need to build the training container image before you can run the pipeline. You also need to build the image that provides a runtime environment for the **Retrieve Best Run** and **Evaluate Model** components.
+The training step in the pipeline employs the AI Platform Training component to schedule a  AI Platform Training job in a custom training container. You need to build the training container image before you can run the pipeline. You also need to build the image that provides a runtime environment for the **Retrieve Best Run** and **Evaluate Model** components.
 
 To maintain the consistency between the development environment (AI Platform Notebooks) and the pipeline's runtime environment on the GKE, both container images are derivatives of the image used by the AI Platform Notebooks instance.
 
@@ -222,9 +222,11 @@ You should be already familiar with these and other parameters passed to the com
 
 You can monitor the run using KFP UI. Follow the instructor who will walk you through the KFP UI and monitoring techniques.
 
-To access the KFP UI in your environment use the following URI:
+To access the KFP UI in your environment issue the following command in your JupyterLab terminal to retrieve its URI:
 
-https://[YOUR_INVERSE_PROXY_HOSTNAME]
+```bash
+echo https://$INVERSE_PROXY_HOSTNAME
+```
 
 
 *Note that your pipeline may fail due to the bug in a BigQuery component that does not handle certain race conditions. If you observe the pipeline failure retry the run from the KFP UI*
